@@ -184,9 +184,10 @@ namespace IceBuilder
             return type.Equals(cppProjectGUID) || type.Equals(cppStoreAppProjectGUID);
         }
 
-        public static bool IsCSharpProject(IVsProject project)
+        public static bool IsCSharpProject(IVsProject p)
         {
-            return ProjectUtil.GetProjecTypeGuid(project).Equals(csharpProjectGUID);
+            return ProjectUtil.GetProjecTypeGuid(p).Equals(csharpProjectGUID) &&
+                MSBuildUtils.IsCSharpProject(MSBuildUtils.LoadedProject(ProjectUtil.GetProjectFullPath(p), false, false));
         }
 
         public static IceBuilderProjectType IsIceBuilderEnabled(IVsProject project)
