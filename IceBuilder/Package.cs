@@ -325,6 +325,11 @@ namespace IceBuilder
 
         public string GetAssembliesDir(IVsProject project = null)
         {
+            string assembliesDir = ProjectUtil.GetEvaluatedProperty(project, IceAssembliesDir);
+            if(Directory.Exists(assembliesDir))
+            {
+                return assembliesDir;
+            }
             string iceHome = GetIceHome(project);
             if(Directory.Exists(Path.Combine(iceHome, "Assemblies")))
             {
@@ -1306,6 +1311,7 @@ namespace IceBuilder
         public static readonly string IceVersionValue = "IceVersion";
         public static readonly string IceVersionMMValue = "IceVersionMM";
         public static readonly string IceIntVersionValue = "IceIntVersion";
+        public static readonly string IceAssembliesDir = "IceAssembliesDir";
         public static readonly string IceCSharpAssembleyKey =
             @"HKEY_CURRENT_USER\Software\Microsoft\.NETFramework\v2.0.50727\AssemblyFoldersEx\Ice";
         public static readonly string IceAutoBuilding = "IceAutoBuilding";
