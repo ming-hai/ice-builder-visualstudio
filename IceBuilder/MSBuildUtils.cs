@@ -152,8 +152,18 @@ namespace IceBuilder
 
         public static bool IsCSharpProject(Microsoft.Build.Evaluation.Project project)
         {
-            return project != null &&
-                project.Xml.Imports.FirstOrDefault(p => p.Project.IndexOf("Microsoft.CSharp.targets") != -1) != null;
+            if(project != null)
+            {
+                foreach (var p in project.Imports)
+                {
+                    if(p.ImportedProject.FullPath.EndsWith("Microsoft.CSharp.targets") ||
+                       p.ImportedProject.FullPath.EndsWith("Microsoft.Windows.UI.Xaml.CSharp.targets"))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
         }
 
         public static bool IsIceBuilderEnabled(Microsoft.Build.Evaluation.Project project)
@@ -367,12 +377,11 @@ namespace IceBuilder
         private static bool SetupCsharpProject(Microsoft.Build.Evaluation.Project project)
         {
             bool modified = AddCsharpGlobalProperties(project);
-            modified = AddImportAfter(project, IceBuilderCSharpProps,
-                project.Xml.Imports.FirstOrDefault(
-                    p => p.Project.EndsWith(@"$(MSBuildToolsPath)\Microsoft.CSharp.targets",
-                                          StringComparison.CurrentCultureIgnoreCase) ||
-                         p.Project.Equals(@"$(MSBuildBinPath)\Microsoft.CSharp.targets",
-                                          StringComparison.CurrentCultureIgnoreCase))) || modified;
+
+            var targets = project.Xml.Imports.FirstOrDefault(
+                p => p.Project.EndsWith(@"CSharp.targets", StringComparison.CurrentCultureIgnoreCase));
+
+            modified = AddImportAfter(project, IceBuilderCSharpProps, targets) || modified;
 
             modified = AddImportAfter(project, IceBuilderCSharpTargets,
                 project.Xml.Imports.FirstOrDefault(
