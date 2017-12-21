@@ -192,6 +192,7 @@ namespace IceBuilder
                 DTEUtil.EnsureFileIsCheckout(project.FullPath);
                 globals = project.Xml.AddPropertyGroup();
                 globals.Label = "Globals";
+                globals.Condition = "'$(OS)' == 'Windows_NT'";
                 globals.Parent.RemoveChild(globals);
                 project.Xml.InsertBeforeChild(globals, project.Xml.FirstChild);
             }
@@ -216,6 +217,7 @@ namespace IceBuilder
                 DTEUtil.EnsureFileIsCheckout(project.FullPath);
                 target = project.Xml.AddTarget("EnsureIceBuilderImports");
                 target.BeforeTargets = "PrepareForBuild";
+                target.Condition = "'$(OS)' == 'Windows_NT'";
 
                 var propertyGroup = target.AddPropertyGroup();
                 propertyGroup.AddProperty("ErrorText", EnsureIceBuilderImportsError);
@@ -270,9 +272,17 @@ namespace IceBuilder
             if(!HasImport(project, import))
             {
                 DTEUtil.EnsureFileIsCheckout(project.FullPath);
-                ProjectImportElement props = project.Xml.CreateImportElement(import);
-                props.Condition = string.Format("Exists('{0}')", import);
-                project.Xml.InsertAfterChild(props, after);
+                if(after != null)
+                {
+                    var props = project.Xml.CreateImportElement(import);
+                    props.Condition = string.Format("Exists('{0}')", import);
+                    project.Xml.InsertAfterChild(props, after);
+                }
+                else
+                {
+                    var props = project.Xml.AddImport(import);
+                    props.Condition = string.Format("Exists('{0}')", import);
+                }
                 return true;
             }
             return false;
