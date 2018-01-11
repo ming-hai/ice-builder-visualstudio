@@ -41,10 +41,7 @@ namespace IceBuilder
             this.lblOutputDirectory = new System.Windows.Forms.Label();
             this.txtOutputDir = new System.Windows.Forms.TextBox();
             this.btnOutputDirectoryBrowse = new System.Windows.Forms.Button();
-            this.referencedAssemblies = new System.Windows.Forms.CheckedListBox();
-            this.lblReferencedAssembliesSep = new System.Windows.Forms.Label();
             this.txtAdditionalOptions = new System.Windows.Forms.TextBox();
-            this.lblReferencedAssemblies = new System.Windows.Forms.Label();
             this.lblAdditionalOptions = new System.Windows.Forms.Label();
             this.tooltip = new System.Windows.Forms.ToolTip(this.components);
             this.lblSliceCompilerOptionsSep = new System.Windows.Forms.Label();
@@ -87,6 +84,7 @@ namespace IceBuilder
             this.txtOutputDir.TabIndex = 17;
             this.tooltip.SetToolTip(this.txtOutputDir, "Directory where generated files are created.");
             this.txtOutputDir.TextChanged += new System.EventHandler(this.txtOutputDir_TextChanged);
+            this.txtOutputDir.Enter += new System.EventHandler(this.OutputDirectory_Enter);
             this.txtOutputDir.Leave += new System.EventHandler(this.OutputDirectory_Leave);
             //
             // btnOutputDirectoryBrowse
@@ -99,23 +97,6 @@ namespace IceBuilder
             this.btnOutputDirectoryBrowse.UseVisualStyleBackColor = true;
             this.btnOutputDirectoryBrowse.Click += new System.EventHandler(this.btnOutputDirectoryBrowse_Click);
             //
-            // referencedAssemblies
-            //
-            this.referencedAssemblies.FormattingEnabled = true;
-            this.referencedAssemblies.Location = new System.Drawing.Point(112, 370);
-            this.referencedAssemblies.Name = "referencedAssemblies";
-            this.referencedAssemblies.Size = new System.Drawing.Size(322, 139);
-            this.referencedAssemblies.TabIndex = 53;
-            this.referencedAssemblies.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.ReferencedAssemblies_ItemChecked);
-            //
-            // lblReferencedAssembliesSep
-            //
-            this.lblReferencedAssembliesSep.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.lblReferencedAssembliesSep.Location = new System.Drawing.Point(128, 362);
-            this.lblReferencedAssembliesSep.Name = "lblReferencedAssembliesSep";
-            this.lblReferencedAssembliesSep.Size = new System.Drawing.Size(402, 1);
-            this.lblReferencedAssembliesSep.TabIndex = 52;
-            //
             // txtAdditionalOptions
             //
             this.txtAdditionalOptions.Location = new System.Drawing.Point(112, 250);
@@ -124,16 +105,8 @@ namespace IceBuilder
             this.txtAdditionalOptions.Size = new System.Drawing.Size(322, 90);
             this.txtAdditionalOptions.TabIndex = 34;
             this.tooltip.SetToolTip(this.txtAdditionalOptions, "Additional command line options to pass to Slice compiler");
+            this.txtAdditionalOptions.Enter += new System.EventHandler(this.AdditionalOptions_Enter);
             this.txtAdditionalOptions.Leave += new System.EventHandler(this.AdditionalOptions_Leave);
-            //
-            // lblReferencedAssemblies
-            //
-            this.lblReferencedAssemblies.AutoSize = true;
-            this.lblReferencedAssemblies.Location = new System.Drawing.Point(8, 354);
-            this.lblReferencedAssemblies.Name = "lblReferencedAssemblies";
-            this.lblReferencedAssemblies.Size = new System.Drawing.Size(121, 13);
-            this.lblReferencedAssemblies.TabIndex = 51;
-            this.lblReferencedAssemblies.Text = "Referenced Assemblies:";
             //
             // lblAdditionalOptions
             //
@@ -179,10 +152,7 @@ namespace IceBuilder
             this.AutoSize = true;
             this.Controls.Add(this.lblOutputSep);
             this.Controls.Add(this.lblSliceCompilerOptionsSep);
-            this.Controls.Add(this.referencedAssemblies);
-            this.Controls.Add(this.lblReferencedAssembliesSep);
             this.Controls.Add(this.lblOutputDirectory);
-            this.Controls.Add(this.lblReferencedAssemblies);
             this.Controls.Add(this.txtAdditionalOptions);
             this.Controls.Add(this.txtOutputDir);
             this.Controls.Add(this.lblAdditionalOptions);
@@ -191,7 +161,7 @@ namespace IceBuilder
             this.Controls.Add(this.includeDirectories);
             this.Controls.Add(this.btnOutputDirectoryBrowse);
             this.Name = "CSharpConfigurationView";
-            this.Size = new System.Drawing.Size(535, 519);
+            this.Size = new System.Drawing.Size(535, 353);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -208,9 +178,6 @@ namespace IceBuilder
         private System.Windows.Forms.Label lblAdditionalOptions;
         private IncludeDirectories includeDirectories;
         private System.Windows.Forms.ToolTip tooltip;
-        private System.Windows.Forms.CheckedListBox referencedAssemblies;
-        private System.Windows.Forms.Label lblReferencedAssembliesSep;
-        private System.Windows.Forms.Label lblReferencedAssemblies;
         private System.Windows.Forms.Label lblSliceCompilerOptionsSep;
         private System.Windows.Forms.Label lblOutputSep;
     }

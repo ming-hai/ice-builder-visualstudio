@@ -5,6 +5,7 @@
 // **********************************************************************
 
 using System;
+using Microsoft.VisualStudio.Shell;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -47,12 +48,6 @@ namespace IceBuilder
                 return (uint)(long)value;
             }
             return VSConstants.VSITEMID_NIL;
-        }
-
-        public static IVsProject GetProject(String path)
-        {
-            List<IVsProject> projects = GetProjects();
-            return projects.FirstOrDefault(p => ProjectUtil.GetProjectFullPath(p).Equals(path));
         }
 
         public static List<IVsProject> GetProjects()
@@ -168,16 +163,6 @@ namespace IceBuilder
             return obj as EnvDTE.Project;
         }
 
-        public static ProjectItem GetProjectItem(IVsHierarchy hierarchy, uint itemId)
-        {
-            object obj = null;
-            if(hierarchy != null)
-            {
-                hierarchy.GetProperty(itemId, (int)__VSHPROPID.VSHPROPID_ExtObject, out obj);
-            }
-            return obj as ProjectItem;
-        }
-
         public static bool IsCppProject(IVsProject project)
         {
             Guid type = ProjectUtil.GetProjecTypeGuid(project);
@@ -187,7 +172,7 @@ namespace IceBuilder
         public static bool IsCSharpProject(IVsProject p)
         {
             return ProjectUtil.GetProjecTypeGuid(p).Equals(csharpProjectGUID) &&
-                MSBuildUtils.IsCSharpProject(MSBuildUtils.LoadedProject(ProjectUtil.GetProjectFullPath(p), false, false));
+                MSBuildUtils.IsCSharpProject(MSBuildUtils.LoadedProject(ProjectUtil.GetProjectFullPath(p), false, true));
         }
 
         public static IceBuilderProjectType IsIceBuilderEnabled(IVsProject project)
@@ -201,6 +186,24 @@ namespace IceBuilder
                     if(MSBuildUtils.IsIceBuilderEnabled(MSBuildUtils.LoadedProject(ProjectUtil.GetProjectFullPath(project),
                                                                                     IsCppProject(project),
                                                                                     true)))
+                    {
+                        return type;
+                    }
+                }
+            }
+            return IceBuilderProjectType.None;
+        }
+
+        public static IceBuilderProjectType IsIceBuilderNuGetInstalled(IVsProject project)
+        {
+            if (project != null)
+            {
+                IceBuilderProjectType type = IsCppProject(project) ? IceBuilderProjectType.CppProjectType :
+                                             IsCSharpProject(project) ? IceBuilderProjectType.CsharpProjectType : IceBuilderProjectType.None;
+                if (type != IceBuilderProjectType.None)
+                {
+                    if(Package.Instance.PackageInstallerServices.IsPackageInstalled(GetProject(project as IVsHierarchy),
+                                                                                    Package.NuGetBuilderPackageId))
                     {
                         return type;
                     }

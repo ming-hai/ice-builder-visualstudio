@@ -77,6 +77,7 @@ namespace IceBuilder
             this.includeList.TabIndex = 51;
             this.toolTip1.SetToolTip(this.includeList, "Specifies one or more directories to add to the Slice include path.");
             this.includeList.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.includeList_ItemCheck);
+            this.includeList.SelectedIndexChanged += new System.EventHandler(this.includeList_SelectionIndexChanged);
             this.includeList.Leave += new System.EventHandler(this.IncludeDirectories_Leave);
             //
             // btnRemove

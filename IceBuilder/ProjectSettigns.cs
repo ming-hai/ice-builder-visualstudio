@@ -18,16 +18,16 @@ namespace IceBuilder
 
         public void Load()
         {
-            OutputDir = GetProperty(PropertyNames.OutputDir);
-            IncludeDirectories = GetProperty(PropertyNames.IncludeDirectories);
-            AdditionalOptions = GetProperty(PropertyNames.AdditionalOptions);
+            OutputDir = GetProperty(PropertyNames.New.OutputDir);
+            IncludeDirectories = GetProperty(PropertyNames.New.IncludeDirectories);
+            AdditionalOptions = GetProperty(PropertyNames.New.AdditionalOptions);
         }
 
         public void Save()
         {
-            SetPropertyIfChanged(PropertyNames.OutputDir, OutputDir);
-            SetPropertyIfChanged(PropertyNames.IncludeDirectories, IncludeDirectories);
-            SetPropertyIfChanged(PropertyNames.AdditionalOptions, AdditionalOptions);
+            SetPropertyIfChanged(PropertyNames.New.OutputDir, OutputDir);
+            SetPropertyIfChanged(PropertyNames.New.IncludeDirectories, IncludeDirectories);
+            SetPropertyIfChanged(PropertyNames.New.AdditionalOptions, AdditionalOptions);
         }
 
         public string OutputDir

@@ -55,11 +55,6 @@ namespace IceBuilder
             _generated[project] = newGenerated;
         }
 
-        public bool Contains(EnvDTE.Project project, string path)
-        {
-            return Contains(project.FullName, path);
-        }
-
         public bool Contains(string project, string path)
         {
             Dictionary<string, List<string>> names;

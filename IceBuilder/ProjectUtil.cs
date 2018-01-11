@@ -88,11 +88,11 @@ namespace IceBuilder
         {
             List<string> items = new List<String>();
             uint sz = 0;
-            project.GetFilesWithItemType("IceBuilder", 0, null, out sz);
+            project.GetFilesWithItemType("SliceCompile", 0, null, out sz);
             if(sz > 0)
             {
                 uint[] ids = new uint[sz];
-                project.GetFilesWithItemType("IceBuilder", sz, ids, out sz);
+                project.GetFilesWithItemType("SliceCompile", sz, ids, out sz);
                 foreach(uint id in ids)
                 {
                     items.Add(GetItemName(project, id));
@@ -168,12 +168,12 @@ namespace IceBuilder
 
         public static string GetCppGeneratedSourceItemPath(IVsProject project, string sliceName)
         {
-            return GetGeneratedItemPath(sliceName, GetEvaluatedProperty(project, PropertyNames.SourceExt, ".h"));
+            return GetGeneratedItemPath(sliceName, GetEvaluatedProperty(project, PropertyNames.New.SourceExt, ".h"));
         }
 
         public static string GetCppGeneratedHeaderItemPath(IVsProject project, string sliceName)
         {
-            return GetGeneratedItemPath(sliceName, GetEvaluatedProperty(project, PropertyNames.HeaderExt, ".h"));
+            return GetGeneratedItemPath(sliceName, GetEvaluatedProperty(project, PropertyNames.New.HeaderExt, ".h"));
         }
 
         private static string GetGeneratedItemPath(string sliceName, string extension)
@@ -223,14 +223,14 @@ namespace IceBuilder
             string outputdir = null;
             if(isHeader)
             {
-                outputdir = evaluated ? GetEvaluatedProperty(project, PropertyNames.HeaderOutputDir) :
-                                        GetProperty(project, PropertyNames.HeaderOutputDir);
+                outputdir = evaluated ? GetEvaluatedProperty(project, PropertyNames.New.HeaderOutputDir) :
+                                        GetProperty(project, PropertyNames.New.HeaderOutputDir);
             }
 
             if(string.IsNullOrEmpty(outputdir))
             {
-                outputdir = evaluated ? GetEvaluatedProperty(project, PropertyNames.OutputDir) :
-                                        GetProperty(project, PropertyNames.OutputDir);
+                outputdir = evaluated ? GetEvaluatedProperty(project, PropertyNames.New.OutputDir) :
+                                        GetProperty(project, PropertyNames.New.OutputDir);
             }
             if(evaluated)
             {
@@ -294,7 +294,7 @@ namespace IceBuilder
 
         public static Dictionary<string, List<string>> GetGeneratedFiles(IVsProject project)
         {
-            return GetGeneratedFiles(project, DTEUtil.IsIceBuilderEnabled(project));
+            return GetGeneratedFiles(project, DTEUtil.IsIceBuilderNuGetInstalled(project));
         }
 
         public static Dictionary<string, List<string>> GetGeneratedFiles(IVsProject project, IceBuilderProjectType type)
@@ -379,12 +379,12 @@ namespace IceBuilder
                 string value;
                 string configName;
                 config.get_DisplayName(out configName);
-                propertyStorage.GetPropertyValue("IceBuilderOutputDir", configName, (uint)_PersistStorageType.PST_PROJECT_FILE, out value);
+                propertyStorage.GetPropertyValue("SliceCompileOutputDir", configName, (uint)_PersistStorageType.PST_PROJECT_FILE, out value);
                 if(!string.IsNullOrEmpty(value) && !outputDirectories.Contains(value))
                 {
                     outputDirectories.Add(value);
                 }
-                propertyStorage.GetPropertyValue("IceBuilderHeaderOutputDir", configName, (uint)_PersistStorageType.PST_PROJECT_FILE, out value);
+                propertyStorage.GetPropertyValue("SliceCompileHeaderOutputDir", configName, (uint)_PersistStorageType.PST_PROJECT_FILE, out value);
                 if(!string.IsNullOrEmpty(value) && !outputDirectories.Contains(value))
                 {
                     headerOutputDirectories.Add(value);
@@ -401,8 +401,8 @@ namespace IceBuilder
                 string outputDir = GetOutputDir(project, false, false);
                 string headerOutputDir = GetOutputDir(project, true, false);
 
-                string sourceExt = GetEvaluatedProperty(project, PropertyNames.SourceExt, ".cpp");
-                string headerExt = GetEvaluatedProperty(project, PropertyNames.HeaderExt, ".h");
+                string sourceExt = GetEvaluatedProperty(project, PropertyNames.New.SourceExt, ".cpp");
+                string headerExt = GetEvaluatedProperty(project, PropertyNames.New.HeaderExt, ".h");
 
                 EnvDTE.Project p = DTEUtil.GetProject(project as IVsHierarchy);
                 if(generateFilesPerConfiguration)

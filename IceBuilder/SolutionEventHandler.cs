@@ -132,7 +132,7 @@ namespace IceBuilder
                 IVsProject project = pHierarchy as IVsProject;
                 if(project != null)
                 {
-                    if(DTEUtil.IsIceBuilderEnabled(project) != IceBuilderProjectType.None)
+                    if(DTEUtil.IsIceBuilderNuGetInstalled(project) != IceBuilderProjectType.None)
                     {
                         Package.Instance.FileTracker.Remove(ProjectUtil.GetProjectFullPath(project));
                     }

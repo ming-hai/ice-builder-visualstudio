@@ -354,42 +354,44 @@ namespace IceBuilder
 
             if(!string.IsNullOrEmpty(cfg.OutputDir))
             {
-                propertyGroup.AddProperty(PropertyNames.OutputDir, cfg.OutputDir);
+                propertyGroup.AddProperty(PropertyNames.New.OutputDir, cfg.OutputDir);
             }
 
-            if(!string.IsNullOrEmpty(cfg.AdditionalOptions))
+            string additionalOptions = "";
+
+            if (cfg.Stream)
             {
-                propertyGroup.AddProperty(PropertyNames.AdditionalOptions, cfg.AdditionalOptions);
+                additionalOptions += "--stream ";
+            }
+
+            if (cfg.Checksum)
+            {
+                additionalOptions += "--checksum ";
+            }
+
+            if (cfg.Ice)
+            {
+                additionalOptions += "--ice ";
+            }
+
+            if (cfg.Tie)
+            {
+                additionalOptions += "--tie ";
+            }
+
+            if (!string.IsNullOrEmpty(cfg.AdditionalOptions))
+            {
+                propertyGroup.AddProperty(PropertyNames.New.AdditionalOptions, additionalOptions + cfg.AdditionalOptions);
             }
 
             if(!string.IsNullOrEmpty(cfg.IncludeDirectories))
             {
-                propertyGroup.AddProperty(PropertyNames.IncludeDirectories,
+                propertyGroup.AddProperty(PropertyNames.New.IncludeDirectories,
                     string.Format(@"{0};$(IceHome)\slice", cfg.IncludeDirectories));
             }
             else
             {
-                propertyGroup.AddProperty(PropertyNames.IncludeDirectories, @"$(IceHome)\slice");
-            }
-
-            if(cfg.Stream)
-            {
-                propertyGroup.AddProperty(PropertyNames.Stream, "True");
-            }
-
-            if(cfg.Checksum)
-            {
-                propertyGroup.AddProperty(PropertyNames.Checksum, "True");
-            }
-
-            if(cfg.Ice)
-            {
-                propertyGroup.AddProperty(PropertyNames.AllowIcePrefix, "True");
-            }
-
-            if(cfg.Tie)
-            {
-                propertyGroup.AddProperty(PropertyNames.Tie, "True");
+                propertyGroup.AddProperty(PropertyNames.New.IncludeDirectories, @"$(IceHome)\slice");
             }
 
             foreach(string assembly in Package.AssemblyNames)
@@ -436,51 +438,52 @@ namespace IceBuilder
 
             if(!string.IsNullOrEmpty(cfg.OutputDir))
             {
-                propertyGroup.AddProperty(PropertyNames.OutputDir, cfg.OutputDir);
+                propertyGroup.AddProperty(PropertyNames.New.OutputDir, cfg.OutputDir);
             }
 
             if(!string.IsNullOrEmpty(cfg.HeaderExt))
             {
-                propertyGroup.AddProperty(PropertyNames.HeaderExt, cfg.HeaderExt);
+                propertyGroup.AddProperty(PropertyNames.New.HeaderExt, cfg.HeaderExt);
             }
 
             if(!string.IsNullOrEmpty(cfg.SourceExt))
             {
-                propertyGroup.AddProperty(PropertyNames.SourceExt, cfg.SourceExt);
-            }
-
-            if(!string.IsNullOrEmpty(cfg.AdditionalOptions))
-            {
-                propertyGroup.AddProperty(PropertyNames.AdditionalOptions, cfg.AdditionalOptions);
+                propertyGroup.AddProperty(PropertyNames.New.SourceExt, cfg.SourceExt);
             }
 
             if(!string.IsNullOrEmpty(cfg.IncludeDirectories))
             {
-                propertyGroup.AddProperty(PropertyNames.IncludeDirectories,
-                    string.Format("{0};$({1})", cfg.IncludeDirectories, PropertyNames.IncludeDirectories));
+                propertyGroup.AddProperty(PropertyNames.New.IncludeDirectories,
+                    string.Format("{0};$({1})", cfg.IncludeDirectories, PropertyNames.New.IncludeDirectories));
             }
 
+            string additionalOptions = "";
             if(cfg.Stream)
             {
-                propertyGroup.AddProperty(PropertyNames.Stream, "True");
-            }
-
-            if(cfg.Checksum)
-            {
-                propertyGroup.AddProperty(PropertyNames.Checksum, "True");
+                additionalOptions += "--stream ";
             }
 
             if(cfg.Ice)
             {
-                propertyGroup.AddProperty(PropertyNames.AllowIcePrefix, "True");
+                additionalOptions += "--ice ";
             }
 
-            if(!string.IsNullOrEmpty(cfg.DLLExport))
+            if (cfg.Checksum)
             {
-                propertyGroup.AddProperty(PropertyNames.DLLExport, cfg.DLLExport);
+                additionalOptions += "--checksum ";
             }
 
-            foreach(ProjectItemDefinitionGroupElement group in project.Xml.ItemDefinitionGroups)
+            if (!string.IsNullOrEmpty(cfg.DLLExport))
+            {
+                additionalOptions += "--dll-export " + cfg.DLLExport;
+            }
+
+            if (!string.IsNullOrEmpty(cfg.AdditionalOptions))
+            {
+                propertyGroup.AddProperty(PropertyNames.New.AdditionalOptions, additionalOptions + cfg.AdditionalOptions);
+            }
+
+            foreach (ProjectItemDefinitionGroupElement group in project.Xml.ItemDefinitionGroups)
             {
                 //
                 // Remove old property sheet from all configurations

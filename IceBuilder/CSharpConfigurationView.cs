@@ -87,56 +87,6 @@ namespace IceBuilder
             }
         }
 
-        public void LoadReferencedAssemblies()
-        {
-            string assembliesDir = Package.Instance.GetAssembliesDir(Page.Project);
-            if(!string.IsNullOrEmpty(assembliesDir))
-            {
-                try
-                {
-                    string[] assemblies = Directory.GetFiles(assembliesDir, "*.dll");
-                    foreach(string assembly in assemblies)
-                    {
-                        string name = Path.GetFileNameWithoutExtension(assembly);
-                        referencedAssemblies.Items.Add(name);
-                        if(ProjectUtil.HasAssemblyReference(DTEUtil.GetProject(Page.Project as IVsHierarchy), name))
-                        {
-                            referencedAssemblies.SetItemCheckState(referencedAssemblies.Items.Count - 1, CheckState.Checked);
-                        }
-                    }
-                }
-                catch(IOException)
-                {
-                }
-            }
-        }
-
-        public List<string> Assemblies
-        {
-            get
-            {
-                List<string> assemblies = new List<string>();
-                foreach(object o in referencedAssemblies.Items)
-                {
-                    assemblies.Add(o.ToString());
-                }
-                return assemblies;
-            }
-        }
-
-        public List<string> ReferencedAssemblies
-        {
-            get
-            {
-                List<string> selected = new List<string>();
-                foreach(object o in referencedAssemblies.CheckedItems)
-                {
-                    selected.Add(o.ToString());
-                }
-                return selected;
-            }
-        }
-
         public IncludeDirectories IncludeDirectories
         {
             get
@@ -147,6 +97,7 @@ namespace IceBuilder
 
         private void btnOutputDirectoryBrowse_Click(object sender, EventArgs e)
         {
+            includeDirectories.EndEditing(true);
             string projectDir = Path.GetFullPath(Path.GetDirectoryName(ProjectUtil.GetProjectFullPath(Page.Project)));
             string selectedPath = UIUtil.BrowserFolderDialog(Handle, "Output Directory", projectDir);
             if(!string.IsNullOrEmpty(selectedPath))
@@ -176,17 +127,22 @@ namespace IceBuilder
             }
         }
 
-        private void ReferencedAssemblies_ItemChecked(object sender, ItemCheckEventArgs e)
-        {
-            Dirty = true;
-        }
-
         private void txtOutputDir_TextChanged(object sender, EventArgs e)
         {
             if(!txtOutputDir.Text.Equals(Page.Settings.OutputDir))
             {
                 Dirty = true;
             }
+        }
+
+        private void OutputDirectory_Enter(object sender, EventArgs e)
+        {
+            includeDirectories.EndEditing(true);
+        }
+
+        private void AdditionalOptions_Enter(object sender, EventArgs e)
+        {
+            includeDirectories.EndEditing(true);
         }
     }
 }

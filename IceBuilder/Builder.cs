@@ -80,7 +80,7 @@ namespace IceBuilder
                             ProjectUtil.GetProjectFullPath(p),
                             properties,
                             null,
-                            new string[] { "IceBuilder_Compile" },
+                            new string[] { "SliceCompile" },
                             project.ProjectCollection.HostServices,
                             BuildRequestDataFlags.IgnoreExistingProjectState |
                             BuildRequestDataFlags.ReplaceExistingProjectInstance);

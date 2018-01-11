@@ -11,19 +11,19 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.ComponentModel.Design;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using Microsoft.VisualStudio;
+using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.Build.Evaluation;
+using NuGet.VisualStudio;
 
 namespace IceBuilder
 {
     [PackageRegistration(UseManagedResourcesOnly = true)]
     [InstalledProductRegistration("#110", "#112", "5.0.0", IconResourceID = 400)]
-    [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideOptionPage(typeof(IceOptionsPage), "Projects", "Ice Builder", 113, 0, true)]
     [ProvideAutoLoad(UIContextGuids80.NoSolution)]
     [Guid(GuidList.IceBuilderPackageString)]
@@ -52,6 +52,8 @@ namespace IceBuilder
             "Glacier2", "Ice", "IceBox", "IceDiscovery", "IceLocatorDiscovery",
             "IceGrid", "IcePatch2", "IceSSL", "IceStorm"
         };
+
+        public static readonly string NuGetBuilderPackageId = "zeroc.icebuilder.msbuild";
 
         #region Visual Studio Services
 
@@ -116,6 +118,7 @@ namespace IceBuilder
             get;
             set;
         }
+
         #endregion
 
         public static Package Instance
@@ -134,6 +137,24 @@ namespace IceBuilder
         {
             get;
             private set;
+        }
+
+        public IVsPackageInstallerEvents PackageInstallerEvents
+        {
+            get;
+            set;
+        }
+
+        public IVsPackageInstallerServices PackageInstallerServices
+        {
+            get;
+            set;
+        }
+
+        public IVsPackageInstaller PackageInstaller
+        {
+            get;
+            set;
         }
 
         public static void UnexpectedExceptionWarning(Exception ex)
@@ -391,7 +412,7 @@ namespace IceBuilder
             {
                 IVsProject p = _buildProjects.ElementAt(0);
                 ProjectUtil.SaveProject(p);
-                ProjectUtil.SetupGenerated(p, DTEUtil.IsIceBuilderEnabled(p));
+                ProjectUtil.SetupGenerated(p, DTEUtil.IsIceBuilderNuGetInstalled(p));
                 if(BuildProject(p))
                 {
                     _buildProjects.Remove(p);
@@ -436,7 +457,22 @@ namespace IceBuilder
 
             List<IVsProject> projects = DTEUtil.GetProjects();
 
-            foreach(IVsProject project in projects)
+            foreach (IVsProject project in projects)
+            {
+                IceBuilderProjectType projectType = DTEUtil.IsIceBuilderEnabled(project);
+                if (projectType != IceBuilderProjectType.None)
+                {
+                    if(!PackageInstallerServices.IsPackageInstalled(DTEUtil.GetProject(project as IVsHierarchy), NuGetBuilderPackageId))
+                    {
+                        PackageInstaller.InstallPackage(null, DTEUtil.GetProject(project as IVsHierarchy), NuGetBuilderPackageId,
+                                                        "5.0.0", false);
+                    }
+                }
+            }
+
+            projects = DTEUtil.GetProjects();
+
+            foreach (IVsProject project in projects)
             {
                 IceBuilderProjectType projectType = DTEUtil.IsIceBuilderEnabled(project);
                 if(projectType != IceBuilderProjectType.None)
@@ -444,19 +480,34 @@ namespace IceBuilder
                     Microsoft.Build.Evaluation.Project p = MSBuildUtils.LoadedProject(
                                 ProjectUtil.GetProjectFullPath(project), projectType == IceBuilderProjectType.CppProjectType, true);
                     bool modified = MSBuildUtils.UpgradeProjectImports(p);
-                    modified = MSBuildUtils.EnsureIceBuilderImports(p) || modified;
                     modified = MSBuildUtils.UpgradeProjectProperties(p) || modified;
-                    if(modified)
+                    modified = MSBuildUtils.RemoveIceBuilderFromProject(p, true) || modified;
+                    modified = MSBuildUtils.UpgradeProjectItems(p) || modified;
+                    if (modified)
                     {
                         SaveProject(project, p);
                     }
                 }
             }
             projects = DTEUtil.GetProjects();
+
+            foreach (IVsProject project in projects)
+            {
+                if (DTEUtil.IsIceBuilderNuGetInstalled(project) == IceBuilderProjectType.CsharpProjectType)
+                {
+                    Microsoft.Build.Evaluation.Project p = MSBuildUtils.LoadedProject(ProjectUtil.GetProjectFullPath(project), false, true);
+                    if (MSBuildUtils.AddProjectFlavorIfNotExists(p, MSBuildUtils.IceBuilderProjectFlavorGUID))
+                    {
+                        SaveProject(project, p);
+                    }
+                }
+            }
+
+            projects = DTEUtil.GetProjects();
             List<IVsProject> sliceProjects = new List<IVsProject>();
             foreach(IVsProject project in projects)
             {
-                IceBuilderProjectType projectType = DTEUtil.IsIceBuilderEnabled(project);
+                IceBuilderProjectType projectType = DTEUtil.IsIceBuilderNuGetInstalled(project);
 
                 if(projectType != IceBuilderProjectType.None)
                 {
@@ -545,37 +596,6 @@ namespace IceBuilder
                     Directory.CreateDirectory(dataDir);
                 }
 
-                foreach(string f in new string[]
-                                        {
-                                            "IceBuilder.Common.props",
-                                            "IceBuilder.Cpp.props",
-                                            "Ice.3.6.0.Cpp.props",
-                                            "IceBuilder.Cpp.targets",
-                                            "IceBuilder.Cpp.xml",
-                                            "IceBuilder.CSharp.props",
-                                            "IceBuilder.CSharp.targets",
-                                            "IceBuilder.Php.props",
-                                            "IceBuilder.Php.targets",
-                                            "IceBuilder.Python.props",
-                                            "IceBuilder.Python.targets",
-                                            "IceBuilder.Tasks.dll"
-                                        })
-                {
-                    if(!File.Exists(Path.Combine(dataDir, f)))
-                    {
-                        File.Copy(Path.Combine(ResourcesDirectory, f), Path.Combine(dataDir, f));
-                    }
-                    else
-                    {
-                        byte[] data1 = File.ReadAllBytes(Path.Combine(ResourcesDirectory, f));
-                        byte[] data2 = File.ReadAllBytes(Path.Combine(dataDir, f));
-                        if(!data1.SequenceEqual(data2))
-                        {
-                            File.Copy(Path.Combine(ResourcesDirectory, f), Path.Combine(dataDir, f), true);
-                        }
-                    }
-                }
-
                 DTE2 = (EnvDTE80.DTE2)GetService(typeof(EnvDTE.DTE));
                 DTEEvents = DTE.Events.DTEEvents;
                 IVsSolution = GetService(typeof(SVsSolution)) as IVsSolution;
@@ -583,30 +603,12 @@ namespace IceBuilder
                 UIShell = Instance.GetService(typeof(SVsUIShell)) as IVsUIShell;
                 MonitorSelection = GetGlobalService(typeof(SVsShellMonitorSelection)) as IVsMonitorSelection;
 
-                // Add our command handlers for menu (commands must exist in the .vsct file)
-                OleMenuCommandService mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
-
                 //
-                // Update the InstallDir it will be used in project imports
+                // Update the InstallDir this was previously used in project imports, but is still usefull if you
+                // need to detect the extension install dir.
                 //
                 Registry.SetValue(IceBuilderKey, string.Format("InstallDir.{0}", DTE.Version), InstallDirectory,
                                   RegistryValueKind.String);
-
-                if(null != mcs)
-                {
-                    // Create the command for the menu item.
-                    CommandID menuCommandAddID = new CommandID(GuidList.IceBuilderCommandsGUI, (int)PkgCmdIDList.AddIceBuilder);
-                    OleMenuCommand menuItemAdd = new OleMenuCommand(AddIceBuilderToProject, menuCommandAddID);
-                    menuItemAdd.Enabled = false;
-                    mcs.AddCommand(menuItemAdd);
-                    menuItemAdd.BeforeQueryStatus += addIceBuilder_BeforeQueryStatus;
-
-                    CommandID menuCommanRemoveID = new CommandID(GuidList.IceBuilderCommandsGUI, (int)PkgCmdIDList.RemoveIceBuilder);
-                    OleMenuCommand menuItemRemove = new OleMenuCommand(RemoveIceBuilderFromProject, menuCommanRemoveID);
-                    menuItemRemove.Enabled = false;
-                    mcs.AddCommand(menuItemRemove);
-                    menuItemRemove.BeforeQueryStatus += removeIceBuilder_BeforeQueryStatus;
-                }
 
                 //
                 // If IceHome isn't set or is set to an invlid location, try to
@@ -716,6 +718,12 @@ namespace IceBuilder
                 VCUtil = assembly.GetType("IceBuilder.VCUtilI").GetConstructor(new Type[] { }).Invoke(
                     new object[] { }) as VCUtil;
 
+                var model = GetGlobalService(typeof(SComponentModel)) as IComponentModel;
+                PackageInstallerServices = model.GetService<IVsPackageInstallerServices>();
+                PackageInstaller = model.GetService<IVsPackageInstaller>();
+                PackageInstallerEvents = model.GetService<IVsPackageInstallerEvents>();
+                PackageInstallerEvents.PackageReferenceAdded += PackageInstallerEvents_PackageReferenceAdded;
+
                 RunningDocumentTableEventHandler = new RunningDocumentTableEventHandler(
                     GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable);
 
@@ -740,6 +748,23 @@ namespace IceBuilder
                 if(File.Exists(AddinPath))
                 {
                     DTEEvents.OnStartupComplete += AddinRemoval;
+                }
+            }
+        }
+
+        private void PackageInstallerEvents_PackageReferenceAdded(IVsPackageMetadata metadata)
+        {
+            var projects = DTEUtil.GetProjects();
+            foreach (IVsProject project in projects)
+            {
+                Microsoft.Build.Evaluation.Project p = MSBuildUtils.LoadedProject(ProjectUtil.GetProjectFullPath(project), false, true);
+                bool netcore = p.Xml.Imports.FirstOrDefault(projectImport => projectImport.Project.EndsWith("Foo")) != null;
+                if (DTEUtil.IsIceBuilderNuGetInstalled(project) == IceBuilderProjectType.CsharpProjectType)
+                {
+                    if (MSBuildUtils.AddProjectFlavorIfNotExists(p, MSBuildUtils.IceBuilderProjectFlavorGUID))
+                    {
+                        SaveProject(project, p);
+                    }
                 }
             }
         }
@@ -778,7 +803,7 @@ namespace IceBuilder
 
                 foreach(IVsProject project in projects)
                 {
-                    IceBuilderProjectType type = DTEUtil.IsIceBuilderEnabled(project);
+                    IceBuilderProjectType type = DTEUtil.IsIceBuilderNuGetInstalled(project);
                     if(type != IceBuilderProjectType.None)
                     {
                         ProjectUtil.SetupGenerated(project, type);
@@ -848,14 +873,6 @@ namespace IceBuilder
             }
         }
 
-        private EnvDTE80.SolutionConfiguration2 ActiveConfiguration
-        {
-            get
-            {
-                return (DTE.Solution.SolutionBuild as EnvDTE80.SolutionBuild2).ActiveConfiguration as EnvDTE80.SolutionConfiguration2;
-            }
-        }
-
         private IVsProject BuildingProject
         {
             get;
@@ -882,180 +899,6 @@ namespace IceBuilder
                 BuildingProject = null;
                 return false;
             }
-        }
-
-        private void addIceBuilder_BeforeQueryStatus(object sender, EventArgs e)
-        {
-            try
-            {
-                OleMenuCommand command = sender as OleMenuCommand;
-                if(command != null)
-                {
-                    IVsProject p = DTEUtil.GetSelectedProject();
-                    if(p != null)
-                    {
-                        if(DTEUtil.IsCppProject(p) || DTEUtil.IsCSharpProject(p))
-                        {
-                            command.Enabled = !MSBuildUtils.IsIceBuilderEnabled(MSBuildUtils.LoadedProject(
-                                ProjectUtil.GetProjectFullPath(p), DTEUtil.IsCppProject(p), true));
-                        }
-                        else
-                        {
-                            command.Enabled = false;
-                        }
-                    }
-                }
-            }
-            catch(Exception ex)
-            {
-                UnexpectedExceptionWarning(ex);
-                throw;
-            }
-        }
-
-        private void removeIceBuilder_BeforeQueryStatus(object sender, EventArgs e)
-        {
-            try
-            {
-                OleMenuCommand command = sender as OleMenuCommand;
-                if(command != null)
-                {
-                    IVsProject p = DTEUtil.GetSelectedProject();
-                    if(p != null)
-                    {
-                        if(DTEUtil.IsCppProject(p) || DTEUtil.IsCSharpProject(p))
-                        {
-                            command.Enabled = MSBuildUtils.IsIceBuilderEnabled(MSBuildUtils.LoadedProject(ProjectUtil.GetProjectFullPath(p), DTEUtil.IsCppProject(p), true));
-                        }
-                        else
-                        {
-                            command.Enabled = false;
-                        }
-                    }
-                }
-            }
-            catch(Exception ex)
-            {
-                UnexpectedExceptionWarning(ex);
-                throw;
-            }
-        }
-
-        private void AddIceBuilderToProject(object sender, EventArgs e)
-        {
-            try
-            {
-                OleMenuCommand command = sender as OleMenuCommand;
-                if(command != null)
-                {
-                    IVsProject p = DTEUtil.GetSelectedProject();
-                    if(p != null)
-                    {
-                        AddIceBuilderToProject(p);
-                    }
-                }
-            }
-            catch(Exception ex)
-            {
-                UnexpectedExceptionWarning(ex);
-                throw;
-            }
-        }
-
-        public void AddIceBuilderToProject(IVsProject p)
-        {
-            String projectPath = ProjectUtil.GetProjectFullPath(p);
-            bool cppProject = DTEUtil.IsCppProject(p);
-            DTEUtil.EnsureFileIsCheckout(projectPath);
-            ProjectUtil.SaveProject(p);
-            Microsoft.Build.Evaluation.Project project = MSBuildUtils.LoadedProject(projectPath, cppProject, false);
-            if(MSBuildUtils.AddIceBuilderToProject(project))
-            {
-                if(cppProject)
-                {
-                    VCUtil.SetupSliceFilter(DTEUtil.GetProject(p as IVsHierarchy));
-                }
-                else
-                {
-                    string includeDirectories = ProjectUtil.GetProperty(p, PropertyNames.IncludeDirectories);
-                    if(string.IsNullOrEmpty(includeDirectories))
-                    {
-                        ProjectUtil.SetProperty(p, PropertyNames.IncludeDirectories, @"$(IceHome)\slice");
-                    }
-                    else if(includeDirectories.IndexOf(@"$(IceHome)\slice") == -1)
-                    {
-                        ProjectUtil.SetProperty(p, PropertyNames.IncludeDirectories,
-                            string.Format(@"$(IceHome)\slice;{0}", includeDirectories));
-                    }
-                }
-                SaveProject(p, project);
-                if(!cppProject)
-                {
-                    IVsProject p1 = DTEUtil.GetProject(projectPath);
-                    ProjectUtil.AddAssemblyReference(DTEUtil.GetProject(p1 as IVsHierarchy),
-                                                     ProjectUtil.GetEvaluatedProperty(p1, "IceAssembliesDir"), "Ice");
-                }
-            }
-        }
-
-        private void RemoveIceBuilderFromProject(object sender, EventArgs e)
-        {
-            try
-            {
-                OleMenuCommand command = sender as OleMenuCommand;
-                if(command != null)
-                {
-                    IVsProject p = DTEUtil.GetSelectedProject();
-                    if(p != null)
-                    {
-                        RemoveIceBuilderFromProject(p);
-                    }
-                }
-            }
-            catch(Exception ex)
-            {
-                UnexpectedExceptionWarning(ex);
-                throw;
-            }
-        }
-
-        private void RemoveIceBuilderFromProject(IVsProject p)
-        {
-            string path = ProjectUtil.GetProjectFullPath(p);
-            DTEUtil.EnsureFileIsCheckout(path);
-            foreach(IVsProject p1 in _buildProjects)
-            {
-                if(path.Equals(ProjectUtil.GetProjectFullPath(p1)))
-                {
-                    _buildProjects.Remove(p1);
-                    break;
-                }
-            }
-
-            ProjectUtil.DeleteItems(
-                ProjectUtil.GetGeneratedFiles(p).Aggregate(
-                    new List<string>(),
-                    (items, kv) =>
-                    {
-                        items.AddRange(kv.Value);
-                        return items;
-                    }));
-
-            if(DTEUtil.IsCSharpProject(p))
-            {
-                VSLangProj.References references = ProjectUtil.GetProjectRererences(DTEUtil.GetProject(p as IVsHierarchy));
-                foreach(VSLangProj.Reference r in references)
-                {
-                    if(AssemblyNames.Contains(r.Name))
-                    {
-                        r.Remove();
-                    }
-                }
-            }
-
-            Microsoft.Build.Evaluation.Project project = MSBuildUtils.LoadedProject(path, DTEUtil.IsCppProject(p), true);
-            MSBuildUtils.RemoveIceBuilderFromProject(project);
-            SaveProject(p, project);
         }
 
         //
@@ -1317,17 +1160,8 @@ namespace IceBuilder
         public static readonly string IceAutoBuilding = "IceAutoBuilding";
     }
 
-    static class PkgCmdIDList
-    {
-        public const uint AddIceBuilder = 0x100;
-        public const uint RemoveIceBuilder = 0x101;
-    };
-
     static class GuidList
     {
         public const string IceBuilderPackageString = "ef9502be-dbc2-4568-a846-02b8e42d04c2";
-        public const string IceBuilderCommands = "6a1127de-354d-414d-968e-f2d8f44147a4";
-
-        public static readonly Guid IceBuilderCommandsGUI = new Guid(IceBuilderCommands);
     };
 }

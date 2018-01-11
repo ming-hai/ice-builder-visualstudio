@@ -169,16 +169,15 @@ namespace IceBuilder
             if(_editingIndex != -1)
             {
                 _txtInclude = new TextBox();
-                _txtInclude.Leave += txtInclude_Leave;
+                //_txtInclude.Leave += txtInclude_Leave;
                 _txtInclude.Text = includeList.Items[includeList.SelectedIndex].ToString();
                 _editingIncludeDir = _txtInclude.Text;
                 includeList.SelectionMode = SelectionMode.One;
 
                 Rectangle rect = includeList.GetItemRectangle(includeList.SelectedIndex);
-                _txtInclude.Location = new Point(includeList.Location.X + 2,
-                                                 includeList.Location.Y + rect.Y);
+                _txtInclude.Location = new Point(includeList.Location.X, includeList.Location.Y + rect.Y);
                 _txtInclude.Width = includeList.Width - 50;
-                _txtInclude.Parent = includeList;
+                _txtInclude.Parent = includeList.Parent;
                 _txtInclude.KeyUp += new KeyEventHandler(txtInclude_KeyUp);
 
                 _btnSelectInclude = new Button();
@@ -187,6 +186,7 @@ namespace IceBuilder
                                                        includeList.Location.Y + rect.Y);
                 _btnSelectInclude.Width = 50;
                 _btnSelectInclude.Height = _txtInclude.Height;
+                _btnSelectInclude.Parent = includeList.Parent;
                 _btnSelectInclude.Click += new EventHandler(btnSelectInclude_Clicked);
 
                 _txtInclude.Show();
@@ -232,7 +232,7 @@ namespace IceBuilder
             EndEditing(true);
         }
 
-        private void EndEditing(bool save)
+        public void EndEditing(bool save)
         {
             if(_editing)
             {
@@ -244,6 +244,8 @@ namespace IceBuilder
                 }
 
                 string path = _txtInclude.Text;
+                _txtInclude.Hide();
+                _btnSelectInclude.Hide();
                 _txtInclude = null;
                 _btnSelectInclude = null;
 
@@ -299,6 +301,11 @@ namespace IceBuilder
         }
 
         private void IncludeDirectories_Leave(object sender, EventArgs e)
+        {
+            EndEditing(true);
+        }
+
+        private void includeList_SelectionIndexChanged(object sender, EventArgs e)
         {
             EndEditing(true);
         }

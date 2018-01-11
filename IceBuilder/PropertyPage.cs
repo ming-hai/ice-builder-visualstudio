@@ -72,27 +72,6 @@ namespace IceBuilder
                 Settings.OutputDir = ConfigurationView.OutputDir;
                 Settings.IncludeDirectories = string.Join(";", ConfigurationView.IncludeDirectories.Values);
                 Settings.AdditionalOptions = ConfigurationView.AdditionalOptions;
-
-                List<string> referencedAssemblies = ConfigurationView.ReferencedAssemblies;
-                string assembliesDir = ProjectUtil.GetEvaluatedProperty(Project, "IceAssembliesDir");
-                foreach(string assembly in ConfigurationView.Assemblies)
-                {
-                    EnvDTE.Project p = DTEUtil.GetProject(Project as IVsHierarchy);
-                    if(ProjectUtil.HasAssemblyReference(p, assembly))
-                    {
-                        if(!referencedAssemblies.Contains(assembly))
-                        {
-                            ProjectUtil.RemoveAssemblyReference(p, assembly);
-                        }
-                    }
-                    else
-                    {
-                        if(referencedAssemblies.Contains(assembly))
-                        {
-                            ProjectUtil.AddAssemblyReference(p, assembliesDir, assembly);
-                        }
-                    }
-                }
                 Settings.Save();
                 ConfigurationView.Dirty = false;
             }
@@ -133,7 +112,7 @@ namespace IceBuilder
                 proppageinfo.dwHelpContext = 0;
                 proppageinfo.pszDocString = null;
                 proppageinfo.pszHelpFile = null;
-                proppageinfo.pszTitle = "Ice Builder";
+                proppageinfo.pszTitle = "Slice Compile";
                 proppageinfo.SIZE.cx = ConfigurationView.Size.Width;
                 proppageinfo.SIZE.cy = ConfigurationView.Size.Height;
                 pageInfo[0] = proppageinfo;
@@ -210,7 +189,6 @@ namespace IceBuilder
                             ConfigurationView.IncludeDirectories.Values = new List<string>(
                                 Settings.IncludeDirectories.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
                             ConfigurationView.AdditionalOptions = Settings.AdditionalOptions;
-                            ConfigurationView.LoadReferencedAssemblies();
                             ConfigurationView.Dirty = false;
                         }
                     }
