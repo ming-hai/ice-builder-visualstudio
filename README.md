@@ -1,8 +1,16 @@
 # Ice Builder for Visual Studio
 
-The Ice Builder for Visual Studio manages the compilation of Slice (`.ice`) files to C++ and C#. It compiles your Slice files with `slice2cpp` and `slice2cs`, and allows you to specify the parameters provided to these compilers.
+The Ice Builder for Visual Studio is a Visual Studio extension that allows you to
+configure the [Ice Builder for MSBuild](1) for your C++ and C# projects, all within
+the Visual Studio IDE.
 
-The Ice Builder is a Visual Studio extension compatible with Visual Studio 2010, 2012, 2013, 2015 and 2017. An Ice installation with `slice2cpp` and `slice2cs` version 3.6.0 or higher is also required.
+The Ice Builder for MSBuild in turn provides support for compiling Slice source files 
+(`.ice` files) within C++ and C# projects created by Visual Studio. It compiles these
+Slice files using the Slice to C++ compiler (`slice2cpp`) or the Slice to C# compiler 
+(`slice2cs`) provided by your Ice installation.
+
+The Ice Builder for Visual Studio requires Ice 3.6.0 or higher, and is compatible with
+Visual Studio 2012, 2013, 2015 and 2017.
 
 ## Contents
 - [Installation](#installation)
@@ -22,10 +30,10 @@ The Ice Builder is a Visual Studio extension compatible with Visual Studio 2010,
 
 ## Installation
 
-The Ice Builder is available as two Visual Studio extensions in the
-Visual Studio Marketplace: [Ice Builder](https://marketplace.visualstudio.com/items?itemName=ZeroCInc.IceBuilder) for Visual Studio 2012, 2013, 2015 and 2017 and [Ice Builder for Visual Studio 2010](https://marketplace.visualstudio.com/items?itemName=ZeroCInc.IceBuilderforVisualStudio2010).
+Ice Builder is available as a Visual Studio extension in the [Visual Studio Marketplace](2).
 
-If you build Ice Builder from sources, simply double-click on `IceBuilder.vsix` or `IceBuilder_VS2010.vsix` to install the extension into Visual Studio.
+If you build Ice Builder from source, simply double-click on `IceBuilder.vsix` to install the
+extension into Visual Studio.
 
 ## Overview
 
@@ -220,3 +228,6 @@ for Ice 3.6 or older, or you can create an `Ice.props` file in `%ALLUSERSPROFILE
     <!-- Temporary file for projects configured to use the old Ice add-in for Visual Studio -->
 </Project>
 ```
+
+[1]: https://github.com/zeroc-ice/ice-builder-msbuild
+[2]: https://marketplace.visualstudio.com/items?itemName=ZeroCInc.IceBuilder
