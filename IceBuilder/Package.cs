@@ -14,11 +14,9 @@ using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using Microsoft.Win32;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.ComponentModelHost;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.Build.Evaluation;
-using NuGet.VisualStudio;
 
 namespace IceBuilder
 {
@@ -139,22 +137,16 @@ namespace IceBuilder
             private set;
         }
 
-        public IVsPackageInstallerEvents PackageInstallerEvents
+        public NuGet NuGet
         {
             get;
-            set;
+            private set;
         }
 
-        public IVsPackageInstallerServices PackageInstallerServices
+        public IVsProjectManagerFactory ProjectManagerFactory
         {
             get;
-            set;
-        }
-
-        public IVsPackageInstaller PackageInstaller
-        {
-            get;
-            set;
+            private set;
         }
 
         public static void UnexpectedExceptionWarning(Exception ex)
@@ -462,10 +454,9 @@ namespace IceBuilder
                 IceBuilderProjectType projectType = DTEUtil.IsIceBuilderEnabled(project);
                 if (projectType != IceBuilderProjectType.None)
                 {
-                    if(!PackageInstallerServices.IsPackageInstalled(DTEUtil.GetProject(project as IVsHierarchy), NuGetBuilderPackageId))
+                    if(!NuGet.IsPackageInstalled(project.GetDTEProject(), NuGetBuilderPackageId))
                     {
-                        PackageInstaller.InstallPackage(null, DTEUtil.GetProject(project as IVsHierarchy), NuGetBuilderPackageId,
-                                                        "5.0.0", false);
+                        NuGet.InstallLatestPackage(project.GetDTEProject(), NuGetBuilderPackageId);
                     }
                 }
             }
@@ -718,11 +709,13 @@ namespace IceBuilder
                 VCUtil = assembly.GetType("IceBuilder.VCUtilI").GetConstructor(new Type[] { }).Invoke(
                     new object[] { }) as VCUtil;
 
-                var model = GetGlobalService(typeof(SComponentModel)) as IComponentModel;
-                PackageInstallerServices = model.GetService<IVsPackageInstallerServices>();
-                PackageInstaller = model.GetService<IVsPackageInstaller>();
-                PackageInstallerEvents = model.GetService<IVsPackageInstallerEvents>();
-                PackageInstallerEvents.PackageReferenceAdded += PackageInstallerEvents_PackageReferenceAdded;
+                NuGet = assembly.GetType("IceBuilder.NuGetI").GetConstructor(new Type[] { }).Invoke(
+                    new object[] { }) as NuGet;
+
+                ProjectManagerFactory = assembly.GetType("IceBuilder.ProjectManagerFactoryI").GetConstructor(new Type[] { }).Invoke(
+                   new object[] { }) as IVsProjectManagerFactory;
+
+                NuGet.OnNugetBatchEnd(PackageInstalled);
 
                 RunningDocumentTableEventHandler = new RunningDocumentTableEventHandler(
                     GetService(typeof(SVsRunningDocumentTable)) as IVsRunningDocumentTable);
@@ -752,7 +745,7 @@ namespace IceBuilder
             }
         }
 
-        private void PackageInstallerEvents_PackageReferenceAdded(IVsPackageMetadata metadata)
+        private void PackageInstalled()
         {
             var projects = DTEUtil.GetProjects();
             foreach (IVsProject project in projects)

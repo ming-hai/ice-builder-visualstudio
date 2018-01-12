@@ -183,13 +183,17 @@ namespace IceBuilder
                         Project = hier as IVsProject;
                         if(Project != null)
                         {
-                            Settings = new ProjectSettigns(Project);
+                            Settings = new ProjectSettigns(Package.Instance.ProjectManagerFactory.GetProjectManager(Project));
                             Settings.Load();
-                            ConfigurationView.OutputDir = Settings.OutputDir;
-                            ConfigurationView.IncludeDirectories.Values = new List<string>(
-                                Settings.IncludeDirectories.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
-                            ConfigurationView.AdditionalOptions = Settings.AdditionalOptions;
-                            ConfigurationView.Dirty = false;
+                            ConfigurationView.LoadSettigns(Settings);
+                            Settings.ProjectManager.ProjectChanged += (sender, args) =>
+                                {
+                                    if(!ConfigurationView.Dirty)
+                                    {
+                                        Settings.Load();
+                                        ConfigurationView.LoadSettigns(Settings);
+                                    }
+                                };
                         }
                     }
                 }

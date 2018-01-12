@@ -63,11 +63,16 @@ namespace IceBuilder
                         .ToList()
                         .ForEach(token =>
                         {
+                            //
+                            // Keep all other pages in is current position
+                            //
                             if(!token.Equals(propertyPageGUID, StringComparison.CurrentCultureIgnoreCase))
                             {
                                 sorted.Add(token);
                             }
-
+                            //
+                            // Add our property pages after the build events property page
+                            //
                             if(token.Equals(BuildEventsPropertyPageGUID, StringComparison.CurrentCultureIgnoreCase))
                             {
                                 sorted.Add(propertyPageGUID);

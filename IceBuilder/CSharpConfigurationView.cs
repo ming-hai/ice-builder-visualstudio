@@ -29,6 +29,15 @@ namespace IceBuilder
             includeDirectories.PropertyPage = Page;
         }
 
+        public void LoadSettigns(ProjectSettigns settings)
+        {
+            OutputDir = settings.OutputDir;
+            IncludeDirectories.Values = new List<string>(
+                settings.IncludeDirectories.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
+            AdditionalOptions = settings.AdditionalOptions;
+            Dirty = false;
+        }
+
         public virtual void Initialize(Control parent, Rectangle rect)
         {
             SetBounds(rect.X, rect.Y, rect.Width, rect.Height);

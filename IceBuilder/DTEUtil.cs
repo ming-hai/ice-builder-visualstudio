@@ -202,8 +202,7 @@ namespace IceBuilder
                                              IsCSharpProject(project) ? IceBuilderProjectType.CsharpProjectType : IceBuilderProjectType.None;
                 if (type != IceBuilderProjectType.None)
                 {
-                    if(Package.Instance.PackageInstallerServices.IsPackageInstalled(GetProject(project as IVsHierarchy),
-                                                                                    Package.NuGetBuilderPackageId))
+                    if(Package.Instance.NuGet.IsPackageInstalled(project.GetDTEProject(), Package.NuGetBuilderPackageId))
                     {
                         return type;
                     }

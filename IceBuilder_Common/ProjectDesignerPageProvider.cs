@@ -13,7 +13,7 @@ namespace IceBuilder
     {
         string IPageMetadata.Name => "Slice Compile";
 
-        Guid IPageMetadata.PageGuid => new Guid(PropertyPage.PropertyPageGUID);
+        Guid IPageMetadata.PageGuid => new Guid("1E2800FE-37C5-4FD3-BC2E-969342EE08AF");
 
         int IPageMetadata.PageOrder => 3;
 
