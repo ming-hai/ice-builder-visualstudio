@@ -2,9 +2,10 @@
 
 The Ice Builder for Visual Studio is a Visual Studio extension that allows you to
 configure the [Ice Builder for MSBuild](1) for your C++ and C# projects, all within
-the Visual Studio IDE.
+the Visual Studio IDE. It serves as front-end for the Ice Builder for MSBuild: all
+the build-time processing is performed by the Ice Builder for MSBuild.
 
-The Ice Builder for MSBuild in turn provides support for compiling Slice source files 
+The Ice Builder for MSBuild provides support for compiling Slice source files 
 (`.ice` files) within C++ and C# projects created by Visual Studio. It compiles these
 Slice files using the Slice to C++ compiler (`slice2cpp`) or the Slice to C# compiler 
 (`slice2cs`) provided by your Ice installation.
