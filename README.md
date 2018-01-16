@@ -1,8 +1,8 @@
 # Ice Builder for Visual Studio
 
-The Ice Builder for Visual Studio is a Visual Studio extension that configures the [Ice Builder for MSBuild](https://github.com/zeroc-ice/ice-builder-msbuild) for your C++ and C# projects, all within the Visual Studio IDE. It serves as a front-end for the Ice Builder for MSBuild: all the build-time processing is performed by the Ice Builder for MSBuild.
+Ice Builder for Visual Studio is a Visual Studio extension that configures [Ice Builder for MSBuild](https://github.com/zeroc-ice/ice-builder-msbuild) for your C++ and C# projects, all within the Visual Studio IDE. It serves as a front-end for Ice Builder for MSBuild: all the build-time processing is performed by Ice Builder for MSBuild.
 
-The Ice Builder for Visual Studio is compatible with Visual Studio 2012, 2013, 2015 and 2017, and works best with the following Ice installations:
+Ice Builder for Visual Studio is compatible with Visual Studio 2012, 2013, 2015 and 2017, and works best with the following Ice installations:
  * Ice NuGet package for Ice 3.7 or greater
  * Ice Web installation or MSI installation for Ice 3.6
 
@@ -46,7 +46,7 @@ Follow these steps:
 
 1. Add the Ice Builder NuGet package (`zeroc.icebuilder.msbuild`) to your C++ project.
 
-   Adding the Ice Builder creates a `Slice Files` filter in your project.
+   Adding Ice Builder creates a `Slice Files` filter in your project.
 
 2. Add one or more Slice (`.ice`) files to your project. While these Slice files can be anywhere, you may want to select a customary location such as the project's home directory or a sub-directory named `slice`.
 
@@ -54,7 +54,7 @@ Follow these steps:
 
 ### Ice Builder Configuration for a C++ Project
 
-The Ice Builder adds an `Ice Builder` property page to the `Common Properties` of your C++ project:
+Ice Builder adds an `Ice Builder` property page to the `Common Properties` of your C++ project:
 
 ![Missing cpp property page](https://github.com/zeroc-ice/ice-builder-visualstudio/raw/master/Screenshots/cpp-property-page.png)
 
@@ -80,7 +80,7 @@ Follow these steps:
 
 1. Add the Ice Builder NuGet package (`zeroc.icebuilder.msbuild`) to your C# project. 
 
-   Adding the Ice Builder creates a `Slice Files` filter in your project.
+   Adding Ice Builder creates a `Slice Files` filter in your project.
    
 2. Reload your project if it targets .NET Framework.
 
@@ -90,7 +90,7 @@ Follow these steps:
 
 ### Ice Builder Configuration for a C# Project
 
-The Ice Builder adds an `Ice Builder` tab to the properties of your C# project:
+Ice Builder adds an `Ice Builder` tab to the properties of your C# project:
 
 ![Missing csharp property page](https://github.com/zeroc-ice/ice-builder-visualstudio/raw/master/Screenshots/csharp-property-page.png)
 
