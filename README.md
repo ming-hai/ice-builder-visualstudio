@@ -1,10 +1,8 @@
 # Ice Builder for Visual Studio
 
-The Ice Builder for Visual Studio is a Visual Studio extension that allows you to configure the [Ice Builder for MSBuild](https://github.com/zeroc-ice/ice-builder-msbuild) for your C++ and C# projects, all within the Visual Studio IDE. It serves as a front-end for the Ice Builder for MSBuild: all the build-time processing is performed by the Ice Builder for MSBuild.
+The Ice Builder for Visual Studio is a Visual Studio extension that configures the [Ice Builder for MSBuild](https://github.com/zeroc-ice/ice-builder-msbuild) for your C++ and C# projects, all within the Visual Studio IDE. It serves as a front-end for the Ice Builder for MSBuild: all the build-time processing is performed by the Ice Builder for MSBuild.
 
-The Ice Builder for MSBuild provides support for compiling Slice source files (`.ice` files) within C++ and C# projects created by Visual Studio. It compiles these Slice files using the Slice to C++ compiler (`slice2cpp`) or the Slice to C# compiler (`slice2cs`) provided by your Ice installation.
-
-The Ice Builder for Visual Studio is compatible with Visual Studio 2012, 2013, 2015 and 2017. It creates projects for the following types of Ice installation:
+The Ice Builder for Visual Studio is compatible with Visual Studio 2012, 2013, 2015 and 2017, and works best with the following Ice installations:
  * Ice NuGet package for Ice 3.7 or greater
  * Ice Web installation or MSI installation for Ice 3.6
 
@@ -14,23 +12,19 @@ WIP
 
 ## Installation
 
-Ice Builder is available as a Visual Studio extension in the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ZeroCInc.IceBuilder).
+Ice Builder can be downloaded from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ZeroCInc.IceBuilder).
 
 You can also install older versions or preview releases of Ice Builder by downloading the desired `IceBuilder.vsix` from the [GitHub Releases page](https://github.com/zeroc-ice/ice-builder-visualstudio/releases), and then double-clicking on `IceBuilder.vsix`.
 
 ## Overview
 
-With Ice Builder, you can add one or more Slice (`.ice`) files to a Visual Studio project. The Ice Builder for MSBuild then compiles these files by launching `slice2cpp` (for C++ projects) or `slice2cs` (for C# projects). All the Slice files in a given project are compiled through a single Slice compiler invocation.
+Ice Builder for MSBuild provides support for compiling Slice source files (`.ice` files) within C++ and C# MSBuild projects, including projects created by Visual Studio. It compiles these Slice files using the Slice to C++ compiler (`slice2cpp`) or the Slice to C# compiler (`slice2cs`) provided by your Ice installation.
 
-The Ice Builder for MSBuild compiles and recompiles a Slice file as needed:
-- when the generated C++ or C# source files are missing or are older than this Slice file
-- when the generated C++ or C# source files are older than a Slice file included directly or indirectly by this Slice file
-
-Ice Builder checks whether Slice files need to be compiled or recompiled each time Visual Studio loads a project, and each time you build a project. And when you remove or rename a Slice file, Ice Builder automatically removes the corresponding generated files.
+You tell Ice Builder for MSBuild which Slice files to compile by adding these files to your project, as described in the sections below. Ice Builder checks whether Slice files need to be compiled or recompiled each time Visual Studio loads a project, and each time you build a project. And if you remove or rename a Slice file with the Visual Studio IDE, Ice Builder for Visual Studio automatically removes the corresponding generated files.
 
 ## Ice Home Configuration
 
-With Ice 3.7 or greater, you add an Ice NuGet package to your project and Ice Builder then uses this Ice installation. You don't need to specify further the Ice installation that Ice Builder uses.
+With Ice 3.7 or greater, you add an Ice NuGet package to your project and Ice Builder then uses this Ice installation. You don't need to specify further the Ice installation used by Ice Builder.
 
 With Ice 3.6, you need to specify the Ice installation used by Ice Builder with the `Tools` > `Options` > `Project and Solutions` > `Ice Builder` options page.
 
