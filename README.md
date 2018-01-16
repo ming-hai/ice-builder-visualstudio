@@ -20,7 +20,7 @@ You can also install older versions or preview releases of Ice Builder by downlo
 
 ## Overview
 
-With the Ice Builder, you can add one or more Slice (`.ice`) files to a Visual Studio project. The Ice Builder for MSBuild then compiles these files by launching `slice2cpp` (for C++ projects) or `slice2cs` (for C# projects). All the Slice files in a given project are compiled through a single Slice compiler invocation.
+With Ice Builder, you can add one or more Slice (`.ice`) files to a Visual Studio project. The Ice Builder for MSBuild then compiles these files by launching `slice2cpp` (for C++ projects) or `slice2cs` (for C# projects). All the Slice files in a given project are compiled through a single Slice compiler invocation.
 
 The Ice Builder for MSBuild compiles and recompiles a Slice file as needed:
 - when the generated C++ or C# source files are missing or are older than this Slice file
