@@ -16,7 +16,7 @@ WIP
 
 Ice Builder is available as a Visual Studio extension in the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ZeroCInc.IceBuilder).
 
-If you build Ice Builder from source, simply double-click on `IceBuilder.vsix` to install the extension into Visual Studio.
+You can also install older versions or preview releases of Ice Builder by downloading the desired `IceBuilder.vsix` from the [GitHub Releases page](https://github.com/zeroc-ice/ice-builder-visualstudio/releases), and then double-clicking on `IceBuilder.vsix`.
 
 ## Overview
 
