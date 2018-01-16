@@ -100,7 +100,7 @@ The Ice Builder adds an `Ice Builder` tab to the properties of your C# project:
 
 ![Missing csharp property page](https://github.com/zeroc-ice/ice-builder-visualstudio/raw/master/Screenshots/csharp-property-page.png)
 
-These properties are the same for all configurations and platforms, and allow you to specify the [options] passed to `slice2cs` when compiling the project's Slice files.
+These properties are the same for all configurations and platforms, and allow you to specify the options passed to `slice2cs` when compiling the project's Slice files.
 
 | Property                                |  Corresponding MSBuild Property |
 | --------------------------------------- | --------------------------------|
