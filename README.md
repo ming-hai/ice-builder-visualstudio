@@ -8,7 +8,6 @@ Ice Builder for Visual Studio is compatible with Visual Studio 2012, 2013, 2015 
 
 ## Contents
 
-* [Contents](#contents)
 * [Installation](#installation)
 * [Overview](#overview)
 * [Ice Home Configuration](#ice-home-configuration)
