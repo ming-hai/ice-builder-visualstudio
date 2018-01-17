@@ -8,11 +8,24 @@ Ice Builder for Visual Studio is compatible with Visual Studio 2012, 2013, 2015 
 
 ## Contents
 
-WIP
+* [Contents](#contents)
+* [Installation](#installation)
+* [Overview](#overview)
+* [Ice Home Configuration](#ice-home-configuration)
+* [Automatic Build Configuration](#automatic-build-configuration)
+* [C++ Usage](#c-usage)
+  * [Adding Slice Files to a C++ Project](#adding-slice-files-to-a-c-project)
+  * [Ice Builder Configuration for a C++ Project](#ice-builder-configuration-for-a-c-project)
+* [C# Usage](#c-usage-1)
+  * [Adding Slice Files to a C# Project](#adding-slice-files-to-a-c-project-1)
+  * [Ice Builder Configuration for a C# Project](#ice-builder-configuration-for-a-c-project-1)
+* [Building Ice Builder from Source](#building-ice-builder-from-source)
+  * [Build Requirements](#build-requirements)
+  * [Build Instructions](#build-instructions)
 
 ## Installation
 
-Ice Builder can be downloaded from the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ZeroCInc.IceBuilder).
+The latest version of Ice Builder is published in the [Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=ZeroCInc.IceBuilder).
 
 You can also install older versions or preview releases of Ice Builder by downloading the desired `IceBuilder.vsix` from the [GitHub Releases page](https://github.com/zeroc-ice/ice-builder-visualstudio/releases), and then double-clicking on `IceBuilder.vsix`.
 
