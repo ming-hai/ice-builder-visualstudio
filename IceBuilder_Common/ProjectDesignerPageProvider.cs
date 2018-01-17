@@ -1,4 +1,9 @@
-﻿
+﻿// **********************************************************************
+//
+// Copyright (c) 2009-2018 ZeroC, Inc. All rights reserved.
+//
+// **********************************************************************
+
 using System.Collections.Generic;
 using System.Composition;
 using System.Threading.Tasks;

@@ -1,6 +1,6 @@
 // **********************************************************************
 //
-// Copyright (c) 2009-2017 ZeroC, Inc. All rights reserved.
+// Copyright (c) 2009-2018 ZeroC, Inc. All rights reserved.
 //
 // **********************************************************************
 
@@ -70,7 +70,7 @@ namespace IceBuilder
             try
             {
                 Settings.OutputDir = ConfigurationView.OutputDir;
-                Settings.IncludeDirectories = string.Join(";", ConfigurationView.IncludeDirectories.Values);
+                Settings.IncludeDirectories = ConfigurationView.IncludeDirectories;
                 Settings.AdditionalOptions = ConfigurationView.AdditionalOptions;
                 Settings.Save();
                 ConfigurationView.Dirty = false;

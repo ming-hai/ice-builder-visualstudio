@@ -1,6 +1,6 @@
 // **********************************************************************
 //
-// Copyright (c) 2009-2017 ZeroC, Inc. All rights reserved.
+// Copyright (c) 2009-2018 ZeroC, Inc. All rights reserved.
 //
 // **********************************************************************
 
@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Microsoft.VisualStudio;
-using Microsoft.VisualStudio.Shell.Interop;
 using System.IO;
 
 namespace IceBuilder
@@ -26,14 +25,12 @@ namespace IceBuilder
         {
             Page = page;
             InitializeComponent();
-            includeDirectories.PropertyPage = Page;
         }
 
         public void LoadSettigns(ProjectSettigns settings)
         {
             OutputDir = settings.OutputDir;
-            IncludeDirectories.Values = new List<string>(
-                settings.IncludeDirectories.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries));
+            IncludeDirectories = settings.IncludeDirectories;
             AdditionalOptions = settings.AdditionalOptions;
             Dirty = false;
         }
@@ -96,17 +93,20 @@ namespace IceBuilder
             }
         }
 
-        public IncludeDirectories IncludeDirectories
+        public string IncludeDirectories
         {
             get
             {
-                return includeDirectories;
+                return txtIncludeDirectories.Text;
+            }
+            set
+            {
+                txtIncludeDirectories.Text = value;
             }
         }
 
         private void btnOutputDirectoryBrowse_Click(object sender, EventArgs e)
         {
-            includeDirectories.EndEditing(true);
             string projectDir = Path.GetFullPath(Path.GetDirectoryName(ProjectUtil.GetProjectFullPath(Page.Project)));
             string selectedPath = UIUtil.BrowserFolderDialog(Handle, "Output Directory", projectDir);
             if(!string.IsNullOrEmpty(selectedPath))
@@ -142,16 +142,6 @@ namespace IceBuilder
             {
                 Dirty = true;
             }
-        }
-
-        private void OutputDirectory_Enter(object sender, EventArgs e)
-        {
-            includeDirectories.EndEditing(true);
-        }
-
-        private void AdditionalOptions_Enter(object sender, EventArgs e)
-        {
-            includeDirectories.EndEditing(true);
         }
     }
 }

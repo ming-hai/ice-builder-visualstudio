@@ -59,6 +59,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\IceBuilder_Common\NuGetI.cs">
+      <Link>NuGetI.cs</Link>
+    </Compile>
     <Compile Include="..\IceBuilder_Common\ProjectManager.cs">
       <Link>ProjectManager.cs</Link>
     </Compile>

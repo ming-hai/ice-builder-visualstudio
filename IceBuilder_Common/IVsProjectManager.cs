@@ -1,4 +1,10 @@
-﻿using System;
+﻿// **********************************************************************
+//
+// Copyright (c) 2009-2018 ZeroC, Inc. All rights reserved.
+//
+// **********************************************************************
+
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.Shell.Interop;
 using MSBuildProject = Microsoft.Build.Evaluation.Project;
@@ -61,12 +67,8 @@ namespace IceBuilder
 
         public string GetProjectProperty(string name)
         {
-            if (MSBuildProject != null)
-            {
-                var property = MSBuildProject.GetProperty(name);
-                return property == null ? String.Empty : property.UnevaluatedValue;
-            }
-            return String.Empty;
+            var property = MSBuildProject.GetProperty(name);
+            return property == null ? String.Empty : property.UnevaluatedValue;
         }
 
         public void SetProjectProperty(string name,

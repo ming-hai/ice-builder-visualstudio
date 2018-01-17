@@ -1,6 +1,6 @@
 // **********************************************************************
 //
-// Copyright (c) 2009-2017 ZeroC, Inc. All rights reserved.
+// Copyright (c) 2009-2018 ZeroC, Inc. All rights reserved.
 //
 // **********************************************************************
 
@@ -315,6 +315,13 @@ namespace IceBuilder
                 modified = true;
             }
 
+            value = GetProperty(project, PropertyNames.Old.BaseDirectoryForGeneratedInclude);
+            {
+                RemoveProperty(project, PropertyNames.Old.BaseDirectoryForGeneratedInclude);
+                SetProperty(project, "IceBuilder", PropertyNames.New.BaseDirectoryForGeneratedInclude, value);
+                modified = true;
+            }
+
             value = GetProperty(project, PropertyNames.Old.SourceExt, false);
             if (!string.IsNullOrEmpty(value))
             {
@@ -403,7 +410,7 @@ namespace IceBuilder
             bool modified = false;
             foreach (var item in project.Xml.Items)
             {
-                if(System.IO.Path.GetExtension(item.Include) == ".ice" && item.ItemType != "SliceCompile")
+                if(item.Include.EndsWith(".ice") && !item.ItemType.Equals("SliceCompile"))
                 {
                     item.ItemType = "SliceCompile";
                     modified = true;
@@ -432,14 +439,6 @@ namespace IceBuilder
                     {
                         modified = RemoveProjectFlavorIfExists(project, IceBuilderProjectFlavorGUID) || modified;
                     }
-                }
-
-                ProjectPropertyGroupElement group = project.Xml.PropertyGroups.FirstOrDefault(
-                    g => g.Label.Equals("IceBuilder", StringComparison.CurrentCultureIgnoreCase));
-                if(group != null)
-                {
-                    DTEUtil.EnsureFileIsCheckout(project.FullPath);
-                    group.Parent.RemoveChild(group);
                 }
 
                 //
@@ -541,6 +540,16 @@ namespace IceBuilder
                     }
                 }
             }
+        }
+
+        public static bool HasIceBuilderPackageReference(Microsoft.Build.Evaluation.Project project)
+        {
+            return project.Items.FirstOrDefault(
+                item =>
+                {
+                    return item.ItemType.Equals("PackageReference") &&
+                           item.EvaluatedInclude.Equals("zeroc.icebuilder.msbuild");
+                }) != null;
         }
     }
 }

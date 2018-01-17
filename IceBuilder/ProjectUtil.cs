@@ -1,6 +1,6 @@
 // **********************************************************************
 //
-// Copyright (c) 2009-2017 ZeroC, Inc. All rights reserved.
+// Copyright (c) 2009-2018 ZeroC, Inc. All rights reserved.
 //
 // **********************************************************************
 
@@ -80,31 +80,11 @@ namespace IceBuilder
 
         public static List<string> GetIceBuilderItems(IVsProject project)
         {
-            IVsProject4 project4 = project as IVsProject4;
-            return project4 != null ? GetIceBuilderItems(project4) : GetIceBuilderItems(project as IVsHierarchy);
-        }
-
-        public static List<string> GetIceBuilderItems(IVsProject4 project)
-        {
-            List<string> items = new List<String>();
-            uint sz = 0;
-            project.GetFilesWithItemType("SliceCompile", 0, null, out sz);
-            if(sz > 0)
-            {
-                uint[] ids = new uint[sz];
-                project.GetFilesWithItemType("SliceCompile", sz, ids, out sz);
-                foreach(uint id in ids)
-                {
-                    items.Add(GetItemName(project, id));
-                }
-            }
-            return items;
-        }
-        public static List<string> GetIceBuilderItems(IVsHierarchy project)
-        {
-            List<string> items = new List<string>();
-            GetIceBuilderItems(project, VSConstants.VSITEMID_ROOT, ref items);
-            return items;
+            var msproject = MSBuildUtils.LoadedProject(GetProjectFullPath(project),
+                                                       DTEUtil.IsCppProject(project), false);
+            return msproject.Items.Where(item => item.ItemType.Equals("SliceCompile"))
+                                  .Select(item => item.EvaluatedInclude)
+                                  .ToList();
         }
 
         public static void GetIceBuilderItems(IVsHierarchy h, uint itemId, ref List<String> items)
@@ -412,12 +392,14 @@ namespace IceBuilder
                         string outputDirEvaluated = Path.Combine(projectDir, Package.Instance.VCUtil.Evaluate(configuration, outputDir));
                         string headerOutputDirEvaluated = Path.Combine(projectDir, Package.Instance.VCUtil.Evaluate(configuration, headerOutputDir));
 
-                        CppGeneratedFileSet fileset = new CppGeneratedFileSet();
-                        fileset.configuration = configuration;
-                        fileset.headers = new List<string>();
-                        fileset.sources = new List<string>();
+                        CppGeneratedFileSet fileset = new CppGeneratedFileSet
+                        {
+                            configuration = configuration,
+                            headers = new List<string>(),
+                            sources = new List<string>()
+                        };
 
-                        foreach(string item in items)
+                        foreach (string item in items)
                         {
                             fileset.filename = item;
                             fileset.sources.Add(Path.GetFullPath(Path.Combine(outputDirEvaluated, GetGeneratedItemPath(item, sourceExt))));
@@ -432,12 +414,14 @@ namespace IceBuilder
                     string outputDirEvaluated = Path.Combine(projectDir, Package.Instance.VCUtil.Evaluate(configuration, outputDir));
                     string headerOutputDirEvaluated = Path.Combine(projectDir, Package.Instance.VCUtil.Evaluate(configuration, headerOutputDir));
 
-                    CppGeneratedFileSet fileset = new CppGeneratedFileSet();
-                    fileset.configuration = configuration;
-                    fileset.headers = new List<string>();
-                    fileset.sources = new List<string>();
+                    CppGeneratedFileSet fileset = new CppGeneratedFileSet
+                    {
+                        configuration = configuration,
+                        headers = new List<string>(),
+                        sources = new List<string>()
+                    };
 
-                    foreach(string item in items)
+                    foreach (string item in items)
                     {
                         fileset.filename = item;
                         fileset.sources.Add(Path.GetFullPath(Path.Combine(outputDirEvaluated, GetGeneratedItemPath(item, sourceExt))));
@@ -705,8 +689,25 @@ namespace IceBuilder
                             );
                 if(item != null)
                 {
-                    item.SetMetadataValue("HintPath", Path.Combine("$(IceAssembliesDir)",
-                                                                   string.Format("{0}.dll", reference.Name)));
+                    if (item.HasMetadata("HintPath"))
+                    {
+                        var hintPath = item.GetMetadata("HintPath").UnevaluatedValue;
+                        if (hintPath.Contains("$(IceAssembliesDir)"))
+                        {
+                            hintPath = FileUtil.RelativePath(reference.ContainingProject.FullName, reference.Path);
+                            //
+                            // If the HintPath points to the NuGet zeroc.ice.net package we upgrade it to not
+                            // use IceAssembliesDir otherwise we remove it
+                            if (hintPath.Contains("packages\\zeroc.ice.net"))
+                            {
+                                item.SetMetadataValue("HintPath", hintPath);
+                            }
+                            else
+                            {
+                                item.RemoveMetadata("HintPath");
+                            }
+                        }
+                    }
                 }
             }
             catch(NotSupportedException)

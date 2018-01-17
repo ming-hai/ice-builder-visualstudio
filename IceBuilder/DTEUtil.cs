@@ -1,6 +1,6 @@
 // **********************************************************************
 //
-// Copyright (c) 2009-2017 ZeroC, Inc. All rights reserved.
+// Copyright (c) 2009-2018 ZeroC, Inc. All rights reserved.
 //
 // **********************************************************************
 
@@ -202,7 +202,9 @@ namespace IceBuilder
                                              IsCSharpProject(project) ? IceBuilderProjectType.CsharpProjectType : IceBuilderProjectType.None;
                 if (type != IceBuilderProjectType.None)
                 {
-                    if(Package.Instance.NuGet.IsPackageInstalled(project.GetDTEProject(), Package.NuGetBuilderPackageId))
+                    if(Package.Instance.NuGet.IsPackageInstalled(project.GetDTEProject(), Package.NuGetBuilderPackageId) ||
+                       MSBuildUtils.HasIceBuilderPackageReference(
+                           MSBuildUtils.LoadedProject(ProjectUtil.GetProjectFullPath(project), IsCppProject(project), true)))
                     {
                         return type;
                     }

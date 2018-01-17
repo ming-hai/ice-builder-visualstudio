@@ -1,8 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// **********************************************************************
+//
+// Copyright (c) 2009-2018 ZeroC, Inc. All rights reserved.
+//
+// **********************************************************************
 
 namespace IceBuilder
 {

@@ -1,4 +1,10 @@
-﻿using System;
+﻿// **********************************************************************
+//
+// Copyright (c) 2009-2018 ZeroC, Inc. All rights reserved.
+//
+// **********************************************************************
+
+using System;
 using System.Linq;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Build.Evaluation;
@@ -7,7 +13,6 @@ using Microsoft.Build.Evaluation;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using Microsoft.VisualStudio.ProjectSystem;
-using System.Composition;
 using Microsoft.VisualStudio.ProjectSystem.Properties;
 #endif
 
@@ -53,7 +58,7 @@ namespace IceBuilder
             ProjectSubscription = projectSource.SourceBlock.LinkTo(
                 new ActionBlock<IProjectVersionedValue<IProjectSnapshot>>(ProjectUpdateAsync));
 
-            Task.Run(async () =>
+            ThreadingService.ExecuteSynchronously(async () =>
                 {
                     using (var projectWriteLock = await ProjectLockService.ReadLockAsync())
                     {
@@ -117,6 +122,11 @@ namespace IceBuilder
             {
                 Project.Save();
             }
+        }
+
+        public bool HasCapability(string capability)
+        {
+            return false;
         }
     }
 

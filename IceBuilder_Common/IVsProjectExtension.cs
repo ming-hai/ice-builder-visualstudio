@@ -1,4 +1,9 @@
-﻿
+﻿// **********************************************************************
+//
+// Copyright (c) 2009-2018 ZeroC, Inc. All rights reserved.
+//
+// **********************************************************************
+
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
