@@ -11,7 +11,7 @@ namespace IceBuilder
     public interface NuGet
     {
         void OnNugetBatchEnd(NuGetBatchEnd batchEnd);
-
+        void Restore(EnvDTE.Project project);
         bool IsPackageInstalled(EnvDTE.Project project, string packageId);
         void InstallLatestPackage(EnvDTE.Project project, string packageId);
     }

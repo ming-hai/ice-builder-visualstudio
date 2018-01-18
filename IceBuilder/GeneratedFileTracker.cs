@@ -71,6 +71,11 @@ namespace IceBuilder
             return false;
         }
 
+        public bool Contains(string project)
+        {
+            return _generated.ContainsKey(project);
+        }
+
         public void Clear()
         {
             _generated.Clear();

@@ -29,7 +29,7 @@ namespace IceBuilder
             try
             {
                 Package.Instance.RunningDocumentTableEventHandler.BeginTrack();
-                Package.Instance.InitializeProjects();
+                Package.Instance.InitializeProjects(DTEUtil.GetProjects());
             }
             catch(Exception ex)
             {

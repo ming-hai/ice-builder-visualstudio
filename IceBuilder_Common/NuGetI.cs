@@ -23,6 +23,12 @@ namespace IceBuilder
             set;
         }
 
+        IVsPackageRestorer PackageRestorer
+        {
+            get;
+            set;
+        }
+
         NuGetBatchEnd BatchEnd
         {
             get;
@@ -34,6 +40,7 @@ namespace IceBuilder
             var model = Package.GetGlobalService(typeof(SComponentModel)) as IComponentModel;
             PackageInstallerServices = model.GetService<IVsPackageInstallerServices>();
             PackageInstaller = model.GetService<IVsPackageInstaller>();
+            PackageRestorer = model.GetService<IVsPackageRestorer>();
             PackageInstallerEvents = model.GetService<IVsPackageInstallerEvents>();
             PackageInstallerEvents.PackageInstalled += PackageInstallerEvents_PackageInstalled;
         }
@@ -46,6 +53,11 @@ namespace IceBuilder
         public void InstallLatestPackage(EnvDTE.Project project, string packageId)
         {
             PackageInstaller.InstallPackage(null, project, packageId, (string)null, false);
+        }
+
+        public void Restore(EnvDTE.Project project)
+        {
+            PackageRestorer.RestorePackages(project);
         }
         private void PackageInstallerEvents_PackageInstalled(IVsPackageMetadata metadata)
         {

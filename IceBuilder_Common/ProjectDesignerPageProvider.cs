@@ -16,7 +16,7 @@ namespace IceBuilder
 {
     class SliceCompilePageMetadata : IPageMetadata
     {
-        string IPageMetadata.Name => "Slice Compile";
+        string IPageMetadata.Name => "Ice Builder";
 
         Guid IPageMetadata.PageGuid => new Guid("1E2800FE-37C5-4FD3-BC2E-969342EE08AF");
 

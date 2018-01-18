@@ -112,7 +112,7 @@ namespace IceBuilder
                 proppageinfo.dwHelpContext = 0;
                 proppageinfo.pszDocString = null;
                 proppageinfo.pszHelpFile = null;
-                proppageinfo.pszTitle = "Slice Compile";
+                proppageinfo.pszTitle = "Ice Builder";
                 proppageinfo.SIZE.cx = ConfigurationView.Size.Width;
                 proppageinfo.SIZE.cy = ConfigurationView.Size.Height;
                 pageInfo[0] = proppageinfo;

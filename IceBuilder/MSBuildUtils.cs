@@ -87,38 +87,6 @@ namespace IceBuilder
                 p => p.Project.Equals(path, StringComparison.CurrentCultureIgnoreCase)) != null;
         }
 
-        public static bool AddProjectFlavorIfNotExists(Microsoft.Build.Evaluation.Project project, string flavor)
-        {
-            ProjectPropertyElement property = project.Xml.Properties.FirstOrDefault(
-                p => p.Name.Equals("ProjectTypeGuids", StringComparison.CurrentCultureIgnoreCase));
-
-            if(property != null)
-            {
-                if(property.Value.IndexOf(flavor) == -1)
-                {
-                    DTEUtil.EnsureFileIsCheckout(project.FullPath);
-                    if(string.IsNullOrEmpty(property.Value))
-                    {
-                        property.Value = string.Format("{0};{1}", flavor, CSharpProjectGUI);
-                    }
-                    else
-                    {
-                        property.Value = string.Format("{0};{1}", flavor, property.Value);
-                    }
-                    return true; //ProjectTypeGuids updated
-                }
-                else
-                {
-                    return false; //ProjectTypeGuids already has this flavor
-                }
-            }
-
-            // ProjectTypeGuids not present
-            DTEUtil.EnsureFileIsCheckout(project.FullPath);
-            project.Xml.AddProperty("ProjectTypeGuids", string.Format("{0};{1}", flavor, CSharpProjectGUI));
-            return true;
-        }
-
         public static bool RemoveProjectFlavorIfExists(Microsoft.Build.Evaluation.Project project, string flavor)
         {
             ProjectPropertyElement property = project.Xml.Properties.FirstOrDefault(
@@ -295,7 +263,13 @@ namespace IceBuilder
             if(!string.IsNullOrEmpty(value))
             {
                 RemoveProperty(project, PropertyNames.Old.IncludeDirectories);
-                SetProperty(project, "IceBuilder", PropertyNames.New.IncludeDirectories, value);
+                value = value.Replace("$(IceHome)\\slice", "");
+                value = value.Replace("$(IceHome)/slice", "");
+                value = value.Trim(';');
+                if(!string.IsNullOrEmpty(value))
+                {
+                    SetProperty(project, "IceBuilder", PropertyNames.New.IncludeDirectories, value);
+                }
                 modified = true;
             }
 
@@ -316,6 +290,7 @@ namespace IceBuilder
             }
 
             value = GetProperty(project, PropertyNames.Old.BaseDirectoryForGeneratedInclude);
+            if(!string.IsNullOrEmpty(value))
             {
                 RemoveProperty(project, PropertyNames.Old.BaseDirectoryForGeneratedInclude);
                 SetProperty(project, "IceBuilder", PropertyNames.New.BaseDirectoryForGeneratedInclude, value);
@@ -405,9 +380,10 @@ namespace IceBuilder
             return modified;
         }
 
-        public static bool UpgradeProjectItems(Microsoft.Build.Evaluation.Project project)
+        public static bool UpgradeProjectItems(Microsoft.Build.Evaluation.Project project, bool cpp)
         {
             bool modified = false;
+
             foreach (var item in project.Xml.Items)
             {
                 if(item.Include.EndsWith(".ice") && !item.ItemType.Equals("SliceCompile"))
@@ -416,6 +392,38 @@ namespace IceBuilder
                     modified = true;
                 }
             }
+
+            var sliceItems = project.Items.Where(i => i.ItemType.Equals("SliceCompile")).Select(i =>  i.GetMetadataValue("FileName"));
+
+
+            //
+            // The default output directory for C++ generated sources changed to $(IntDir) in Ice Builder 5.x
+            // projects that were using the default will be automatically upgrade, we remove the old generated
+            // project items and the new generated items will be automatically add during project initialization
+            // if required.
+            //
+            if (cpp)
+            {
+                bool defaultOuputDir = string.IsNullOrEmpty(GetProperty(project, PropertyNames.New.OutputDir, false)) &&
+                                       GetProperty(project, PropertyNames.New.OutputDir, true).Equals("$(IntDir)");
+                if (defaultOuputDir)
+                {
+                    var oldGenerated = project.Items.Where(item =>
+                        {
+                            if (item.ItemType.Equals("ClCompile") || item.ItemType.Equals("ClInclude"))
+                            {
+                                return System.IO.Path.GetDirectoryName(item.EvaluatedInclude).Equals("generated") &&
+                                    sliceItems.Contains(System.IO.Path.GetFileNameWithoutExtension(item.EvaluatedInclude));
+                            }
+                            else
+                            {
+                                return false;
+                            }
+                        });
+                    project.RemoveItems(oldGenerated);
+                }
+            }
+
             return modified;
         }
 

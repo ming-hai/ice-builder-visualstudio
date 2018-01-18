@@ -16,24 +16,6 @@ namespace IceBuilder
 {
     public class ProjectUtil
     {
-        public static Guid GetProjecGuid(IVsProject project)
-        {
-            IVsHierarchy hierarchy = project as IVsHierarchy;
-            if(hierarchy != null)
-            {
-                try
-                {
-                    Guid guid;
-                    ErrorHandler.ThrowOnFailure(hierarchy.GetGuidProperty(VSConstants.VSITEMID_ROOT, (int)__VSHPROPID.VSHPROPID_ProjectIDGuid, out guid));
-                    return guid;
-                }
-                catch(Exception)
-                {
-                }
-            }
-            return new Guid();
-        }
-
         //
         // Get the Guid that idenifies the type of the project
         //
@@ -233,13 +215,6 @@ namespace IceBuilder
             return string.IsNullOrEmpty(value) ? defaultValue : value;
         }
 
-        public static void SetProperty(IVsProject project, string name, string value)
-        {
-            var fullPath = GetProjectFullPath(project);
-            DTEUtil.EnsureFileIsCheckout(fullPath);
-            MSBuildUtils.SetProperty(MSBuildUtils.LoadedProject(fullPath, DTEUtil.IsCppProject(project), true), "IceBuilder", name, value);
-        }
-
         public static string GetEvaluatedProperty(IVsProject project, string name)
         {
             return GetEvaluatedProperty(project, name, string.Empty);
@@ -270,11 +245,6 @@ namespace IceBuilder
         public static EnvDTE.ProjectItem FindProjectItem(string path)
         {
             return Package.Instance.DTE2.Solution.FindProjectItem(path);
-        }
-
-        public static Dictionary<string, List<string>> GetGeneratedFiles(IVsProject project)
-        {
-            return GetGeneratedFiles(project, DTEUtil.IsIceBuilderNuGetInstalled(project));
         }
 
         public static Dictionary<string, List<string>> GetGeneratedFiles(IVsProject project, IceBuilderProjectType type)
@@ -328,13 +298,13 @@ namespace IceBuilder
         public static IVsCfg[]
         GetProjectConfigurations(IVsProject project)
         {
-            IVsCfgProvider provider = project as IVsCfgProvider;
-            uint[] sz = new uint[1];
-            provider.GetCfgs(0, null, sz, null);
-            if(sz[0] > 0)
+            IVsCfgProvider provider = Microsoft.VisualStudio.Shell.VsShellUtilities.GetCfgProvider(project as IVsHierarchy);
+            var expected = new uint[1];
+            provider.GetCfgs(0, null, expected, null);
+            if(expected[0] > 0)
             {
-                IVsCfg[] cfgs = new IVsCfg[sz[0]];
-                provider.GetCfgs(sz[0], cfgs, sz, null);
+                IVsCfg[] cfgs = new IVsCfg[expected[0]];
+                provider.GetCfgs(expected[0], cfgs, expected, null);
                 return cfgs;
             }
             return new IVsCfg[0];
@@ -593,89 +563,23 @@ namespace IceBuilder
             }
         }
 
-        public static bool AddAssemblyReference(EnvDTE.Project project, string assembliesDir, string component)
-        {
-            string path = Path.Combine(assembliesDir, string.Format("{0}.dll", component));
-            VSLangProj.VSProject vsProject = (VSLangProj.VSProject)project.Object;
-            try
-            {
-                VSLangProj80.Reference3 reference = (VSLangProj80.Reference3)vsProject.References.Add(path);
-                TrySetCopyLocal(reference);
-                TrySetSpecificVersion(reference);
-                TrySetHintPath(reference);
-                return true;
-            }
-            catch(COMException)
-            {
-            }
-            return false;
-        }
-
-        private static void TrySetCopyLocal(VSLangProj80.Reference3 reference)
-        {
-            //
-            // Always set copy local to true for references that we add
-            //
-            try
-            {
-                //
-                // In order to properly write this to MSBuild in ALL cases, we have to trigger the Property Change
-                // notification with a new value of "true". However, "true" is the default value, so in order to
-                // cause a notification to fire, we have to set it to false and then back to true
-                //
-                reference.CopyLocal = false;
-                reference.CopyLocal = true;
-            }
-            catch(NotSupportedException)
-            {
-            }
-            catch(NotImplementedException)
-            {
-            }
-            catch(COMException)
-            {
-            }
-        }
-
-        private static void TrySetSpecificVersion(VSLangProj80.Reference3 reference)
-        {
-            //
-            // Allways set SpecificVersion to false so that references still work
-            // when Ice Home setting is updated.
-            //
-            try
-            {
-                reference.SpecificVersion = true;
-                reference.SpecificVersion = false;
-            }
-            catch(NotSupportedException)
-            {
-            }
-            catch(NotImplementedException)
-            {
-            }
-            catch(COMException)
-            {
-            }
-        }
-
         public static VSLangProj.References GetProjectRererences(EnvDTE.Project project)
         {
             return ((VSLangProj.VSProject)project.Object).References;
         }
 
-        public static void UpgradReferencesHintPath(EnvDTE.Project project)
+        public static void UpgradReferencesHintPath(EnvDTE.Project project, string assemblyDir)
         {
             foreach(VSLangProj80.Reference3 r in GetProjectRererences(project))
             {
                 if(Package.AssemblyNames.Contains(r.Name))
                 {
-                    TrySetHintPath(r);
+                    TrySetHintPath(r, assemblyDir);
                 }
             }
         }
 
-        private static void TrySetHintPath(VSLangProj80.Reference3 reference)
+        private static void TrySetHintPath(VSLangProj80.Reference3 reference, string assemblyDir)
         {
             try
             {
@@ -694,7 +598,8 @@ namespace IceBuilder
                         var hintPath = item.GetMetadata("HintPath").UnevaluatedValue;
                         if (hintPath.Contains("$(IceAssembliesDir)"))
                         {
-                            hintPath = FileUtil.RelativePath(reference.ContainingProject.FullName, reference.Path);
+                            hintPath = hintPath.Replace("$(IceAssembliesDir)", 
+                                FileUtil.RelativePath(Path.GetDirectoryName(reference.ContainingProject.FullName), assemblyDir));
                             //
                             // If the HintPath points to the NuGet zeroc.ice.net package we upgrade it to not
                             // use IceAssembliesDir otherwise we remove it
@@ -719,43 +624,6 @@ namespace IceBuilder
             catch(COMException)
             {
             }
-        }
-
-        public static bool RemoveAssemblyReference(EnvDTE.Project project, string component)
-        {
-            foreach(VSLangProj.Reference r in ((VSLangProj.VSProject)project.Object).References)
-            {
-                if(r.Name.Equals(component, StringComparison.OrdinalIgnoreCase))
-                {
-                    r.Remove();
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static bool HasAssemblyReference(EnvDTE.Project project, string component)
-        {
-            foreach(VSLangProj.Reference r in ((VSLangProj.VSProject)project.Object).References)
-            {
-                if(r.Name.Equals(component, StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        public static VSLangProj.Reference FindAssemblyReference(EnvDTE.Project project, String component)
-        {
-            foreach(VSLangProj.Reference r in ((VSLangProj.VSProject)project.Object).References)
-            {
-                if(r.Name.Equals(component, StringComparison.OrdinalIgnoreCase))
-                {
-                    return r;
-                }
-            }
-            return null;
         }
     }
 }
