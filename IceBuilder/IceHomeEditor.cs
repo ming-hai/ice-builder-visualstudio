@@ -36,18 +36,19 @@ namespace IceBuilder
 
         public bool SetIceHome(string path)
         {
-
-            if(string.IsNullOrEmpty(path) ||
-               File.Exists(Path.Combine(path, "config", "ice.props")) ||
-               File.Exists(Path.Combine(path, "config", "icebuilder.props")))
+            if(!string.IsNullOrEmpty(path))
             {
-                txtIceHome.Text = path;
-            }
-            else
-            {
-                lblInfo.Text =
-                    string.Format("Invalid Ice home directory:\r\n\"{0}\"\r\n", path);
-                return false;
+                if (File.Exists(Path.Combine(path, "config", "ice.props")) ||
+                   File.Exists(Path.Combine(path, "config", "icebuilder.props")))
+                {
+                    txtIceHome.Text = path;
+                }
+                else
+                {
+                    lblInfo.Text =
+                        string.Format("Invalid Ice home directory:\r\n\"{0}\"\r\n", path);
+                    return false;
+                }
             }
             return true;
         }
