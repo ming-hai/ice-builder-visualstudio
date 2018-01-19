@@ -40,7 +40,7 @@ With Ice 3.7 or greater, you add an Ice NuGet package to your project and Ice Bu
 
 With Ice 3.6, you need to specify the Ice installation used by Ice Builder with the `Tools` > `Options` > `Project and Solutions` > `Ice Builder` options page.
 
-![Ice home screenshot](/Screenshots/vs2015-options.png)
+![Ice home screenshot](/Screenshots/options.png)
 
 :warning: This Ice Home setting is ignored when a project uses an Ice NuGet package. Installing an Ice NuGet package into a project automatically configures the project to use the Ice SDK provided by that NuGet package.
 
