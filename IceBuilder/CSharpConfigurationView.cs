@@ -115,7 +115,7 @@ namespace IceBuilder
                 OutputDir = string.IsNullOrEmpty(selectedPath) ? "." : selectedPath;
                 if(!txtOutputDir.Text.Equals(Page.Settings.OutputDir))
                 {
-                    Dirty = true;
+                    Dirty = isDirty();
                 }
             }
         }
@@ -124,7 +124,7 @@ namespace IceBuilder
         {
             if(!txtOutputDir.Text.Equals(Page.Settings.OutputDir))
             {
-                Dirty = true;
+                Dirty = isDirty();
             }
         }
 
@@ -132,7 +132,7 @@ namespace IceBuilder
         {
             if(!txtAdditionalOptions.Text.Equals(Page.Settings.AdditionalOptions))
             {
-                Dirty = true;
+                Dirty = isDirty();
             }
         }
 
@@ -140,8 +140,31 @@ namespace IceBuilder
         {
             if(!txtOutputDir.Text.Equals(Page.Settings.OutputDir))
             {
-                Dirty = true;
+                Dirty = isDirty();
             }
+        }
+
+        private void txtIncludeDirectories_TextChanged(object sender, EventArgs e)
+        {
+            if (!txtIncludeDirectories.Text.Equals(Page.Settings.IncludeDirectories))
+            {
+                Dirty = isDirty();
+            }
+        }
+
+        private void txtAdditionalOptions_TextChanged(object sender, EventArgs e)
+        {
+            if (!txtAdditionalOptions.Text.Equals(Page.Settings.AdditionalOptions))
+            {
+                Dirty = isDirty();
+            }
+        }
+
+        private bool isDirty()
+        {
+            return !txtOutputDir.Text.Equals(Page.Settings.OutputDir) ||
+                !txtIncludeDirectories.Text.Equals(Page.Settings.IncludeDirectories) ||
+                !txtAdditionalOptions.Text.Equals(Page.Settings.AdditionalOptions);
         }
     }
 }

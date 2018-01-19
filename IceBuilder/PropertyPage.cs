@@ -61,7 +61,6 @@ namespace IceBuilder
             catch(Exception ex)
             {
                 Package.UnexpectedExceptionWarning(ex);
-                throw;
             }
         }
 
@@ -78,7 +77,6 @@ namespace IceBuilder
             catch(Exception ex)
             {
                 Package.UnexpectedExceptionWarning(ex);
-                throw;
             }
         }
 
@@ -95,7 +93,6 @@ namespace IceBuilder
             catch(Exception ex)
             {
                 Package.UnexpectedExceptionWarning(ex);
-                throw;
             }
         }
 
@@ -120,7 +117,6 @@ namespace IceBuilder
             catch(Exception ex)
             {
                 Package.UnexpectedExceptionWarning(ex);
-                throw;
             }
         }
 
@@ -130,15 +126,7 @@ namespace IceBuilder
 
         public int IsPageDirty()
         {
-            try
-            {
-                return ConfigurationView.Dirty ? VSConstants.S_OK : VSConstants.S_FALSE;
-            }
-            catch(Exception ex)
-            {
-                Package.UnexpectedExceptionWarning(ex);
-                throw;
-            }
+            return ConfigurationView.Dirty ? VSConstants.S_OK : VSConstants.S_FALSE;
         }
 
         public void Move(RECT[] pRect)
@@ -152,7 +140,6 @@ namespace IceBuilder
             catch(Exception ex)
             {
                 Package.UnexpectedExceptionWarning(ex);
-                throw;
             }
         }
 
@@ -201,7 +188,6 @@ namespace IceBuilder
             catch(Exception ex)
             {
                 Package.UnexpectedExceptionWarning(ex);
-                throw;
             }
         }
 
@@ -244,19 +230,11 @@ namespace IceBuilder
 
         public int TranslateAccelerator(MSG[] pMsg)
         {
-            try
-            {
-                Message message = Message.Create(pMsg[0].hwnd, (int)pMsg[0].message, pMsg[0].wParam, pMsg[0].lParam);
-                int hr = ConfigurationView.ProcessAccelerator(ref message);
-                pMsg[0].lParam = message.LParam;
-                pMsg[0].wParam = message.WParam;
-                return hr;
-            }
-            catch(Exception ex)
-            {
-                Package.UnexpectedExceptionWarning(ex);
-                throw;
-            }
+            Message message = Message.Create(pMsg[0].hwnd, (int)pMsg[0].message, pMsg[0].wParam, pMsg[0].lParam);
+            int hr = ConfigurationView.ProcessAccelerator(ref message);
+            pMsg[0].lParam = message.LParam;
+            pMsg[0].wParam = message.WParam;
+            return hr;
         }
 
         #endregion

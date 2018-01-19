@@ -87,6 +87,38 @@ namespace IceBuilder
                 p => p.Project.Equals(path, StringComparison.CurrentCultureIgnoreCase)) != null;
         }
 
+        public static bool AddProjectFlavorIfNotExists(Microsoft.Build.Evaluation.Project project, string flavor)
+        {
+            ProjectPropertyElement property = project.Xml.Properties.FirstOrDefault(
+                p => p.Name.Equals("ProjectTypeGuids", StringComparison.CurrentCultureIgnoreCase));
+
+            if (property != null)
+            {
+                if (property.Value.IndexOf(flavor) == -1)
+                {
+                    DTEUtil.EnsureFileIsCheckout(project.FullPath);
+                    if (string.IsNullOrEmpty(property.Value))
+                    {
+                        property.Value = string.Format("{0};{1}", flavor, CSharpProjectGUI);
+                    }
+                    else
+                    {
+                        property.Value = string.Format("{0};{1}", flavor, property.Value);
+                    }
+                    return true; //ProjectTypeGuids updated
+                }
+                else
+                {
+                    return false; //ProjectTypeGuids already has this flavor
+                }
+            }
+
+            // ProjectTypeGuids not present
+            DTEUtil.EnsureFileIsCheckout(project.FullPath);
+            project.Xml.AddProperty("ProjectTypeGuids", string.Format("{0};{1}", flavor, CSharpProjectGUI));
+            return true;
+        }
+
         public static bool RemoveProjectFlavorIfExists(Microsoft.Build.Evaluation.Project project, string flavor)
         {
             ProjectPropertyElement property = project.Xml.Properties.FirstOrDefault(
@@ -255,6 +287,7 @@ namespace IceBuilder
             if(!string.IsNullOrEmpty(value))
             {
                 RemoveProperty(project, PropertyNames.Old.OutputDir);
+                value = value.Replace("IceBuilder", "SliceCompile");
                 SetProperty(project, "IceBuilder", PropertyNames.New.OutputDir, value);
                 modified = true;
             }
@@ -266,7 +299,8 @@ namespace IceBuilder
                 value = value.Replace("$(IceHome)\\slice", "");
                 value = value.Replace("$(IceHome)/slice", "");
                 value = value.Trim(';');
-                if(!string.IsNullOrEmpty(value))
+                value = value.Replace("IceBuilder", "SliceCompile");
+                if (!string.IsNullOrEmpty(value))
                 {
                     SetProperty(project, "IceBuilder", PropertyNames.New.IncludeDirectories, value);
                 }
@@ -277,6 +311,7 @@ namespace IceBuilder
             if (!string.IsNullOrEmpty(value))
             {
                 RemoveProperty(project, PropertyNames.Old.HeaderOutputDir);
+                value = value.Replace("IceBuilder", "SliceCompile");
                 SetProperty(project, "IceBuilder", PropertyNames.New.HeaderOutputDir, value);
                 modified = true;
             }
@@ -293,6 +328,7 @@ namespace IceBuilder
             if(!string.IsNullOrEmpty(value))
             {
                 RemoveProperty(project, PropertyNames.Old.BaseDirectoryForGeneratedInclude);
+                value = value.Replace("IceBuilder", "SliceCompile");
                 SetProperty(project, "IceBuilder", PropertyNames.New.BaseDirectoryForGeneratedInclude, value);
                 modified = true;
             }
@@ -372,8 +408,9 @@ namespace IceBuilder
                 modified = true;
             }
 
-            if(!String.IsNullOrEmpty(additionalOptions))
+            if(!string.IsNullOrEmpty(additionalOptions))
             {
+                additionalOptions = additionalOptions.Replace("IceBuilder", "SliceCompile");
                 SetProperty(project, "IceBuilder", PropertyNames.New.AdditionalOptions, additionalOptions);
             }
 
@@ -518,36 +555,6 @@ namespace IceBuilder
         public static string GetEvaluatedProperty(Microsoft.Build.Evaluation.Project project, string name)
         {
             return project.GetPropertyValue(name);
-        }
-
-        //
-        // Set Ice Home and force projects to re evaluate changes in the imported project
-        //
-        public static void SetIceHome(List<IVsProject> projects, string iceHome, string iceVersion, string iceIntVersion, string iceVersionMM)
-        {
-            foreach(IVsProject p in projects)
-            {
-                if(DTEUtil.IsIceBuilderNuGetInstalled(p) != IceBuilderProjectType.None)
-                {
-                    Microsoft.Build.Evaluation.Project project = LoadedProject(ProjectUtil.GetProjectFullPath(p), DTEUtil.IsCppProject(p), true);
-                    ResolvedImport import = project.Imports.FirstOrDefault(i => i.ImportedProject.FullPath.EndsWith("IceBuilder.Common.props"));
-
-                    if(import.ImportedProject != null)
-                    {
-                        ProjectPropertyGroupElement group = import.ImportedProject.PropertyGroups.FirstOrDefault(
-                            g => g.Label.Equals("IceHome", StringComparison.CurrentCultureIgnoreCase));
-                        if(group != null)
-                        {
-                            DTEUtil.EnsureFileIsCheckout(project.FullPath);
-                            group.SetProperty(Package.IceHomeValue, iceHome);
-                            group.SetProperty(Package.IceVersionValue, iceVersion);
-                            group.SetProperty(Package.IceIntVersionValue, iceIntVersion);
-                            group.SetProperty(Package.IceVersionMMValue, iceVersionMM);
-                            project.ReevaluateIfNecessary();
-                        }
-                    }
-                }
-            }
         }
 
         public static bool HasIceBuilderPackageReference(Microsoft.Build.Evaluation.Project project)

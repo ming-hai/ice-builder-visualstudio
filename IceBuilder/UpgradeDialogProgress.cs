@@ -64,5 +64,10 @@ namespace IceBuilder
         }
 
         private object _lock = new object();
+
+        private void cancelButton_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -233,8 +233,6 @@ namespace IceBuilder
                 Registry.SetValue(IceBuilderKey, IceVersionMMValue, "", RegistryValueKind.String);
 
                 TryRemoveAssemblyFoldersExKey();
-
-                MSBuildUtils.SetIceHome(DTEUtil.GetProjects(), "", "", "", "");
                 return;
             }
             else
@@ -265,8 +263,6 @@ namespace IceBuilder
 
                     string mmVersion = p.GetPropertyValue(IceVersionMMValue);
                     Registry.SetValue(IceBuilderKey, IceVersionMMValue, mmVersion, RegistryValueKind.String);
-
-                    MSBuildUtils.SetIceHome(DTEUtil.GetProjects(), value, version, intVersion, mmVersion);
 
                     Registry.SetValue(IceCSharpAssembleyKey, "", GetAssembliesDir(), RegistryValueKind.String);
                     ICollection<Microsoft.Build.Evaluation.Project> projects =
@@ -318,8 +314,6 @@ namespace IceBuilder
                     string iceVersionMM = string.Format("{0}.{1}", v.Major, v.Minor);
                     Registry.SetValue(IceBuilderKey, IceVersionMMValue, iceVersionMM, RegistryValueKind.String);
 
-                    MSBuildUtils.SetIceHome(DTEUtil.GetProjects(), value, v.ToString(), iceIntVersion, iceVersionMM);
-
                     Registry.SetValue(IceCSharpAssembleyKey, "", GetAssembliesDir(), RegistryValueKind.String);
                 }
             }
@@ -327,24 +321,28 @@ namespace IceBuilder
 
         public string GetAssembliesDir(IVsProject project = null)
         {
-            string assembliesDir = ProjectUtil.GetEvaluatedProperty(project, IceAssembliesDir);
-            if(Directory.Exists(assembliesDir))
+            if (project != null)
             {
-                return assembliesDir;
+                string assembliesDir = ProjectUtil.GetEvaluatedProperty(project, IceAssembliesDir);
+                if (Directory.Exists(assembliesDir))
+                {
+                    return assembliesDir;
+                }
             }
             string iceHome = GetIceHome(project);
-            if(Directory.Exists(Path.Combine(iceHome, "Assemblies")))
+            if (Directory.Exists(Path.Combine(iceHome, "Assemblies")))
             {
                 return Path.Combine(iceHome, "Assemblies");
             }
-            else if(Directory.Exists(Path.Combine(iceHome, "csharp", "Assemblies")))
+            else if (Directory.Exists(Path.Combine(iceHome, "csharp", "Assemblies")))
             {
                 return Path.Combine(iceHome, "csharp", "Assemblies");
             }
-            else if(Directory.Exists(Path.Combine(iceHome, "lib")))
+            else if (Directory.Exists(Path.Combine(iceHome, "lib")))
             {
                 return Path.Combine(iceHome, "lib");
             }
+
             return string.Empty;
         }
 
@@ -421,14 +419,22 @@ namespace IceBuilder
 
         public void InitializeProjects(List<IVsProject> projects)
         {
-            if (ProjectConverter.TryUpgrade(projects))
+            try
             {
-                projects = DTEUtil.GetProjects();
-                List<IVsProject> sliceProjects = new List<IVsProject>();
-                foreach (IVsProject project in projects)
+                NuGet.OnNugetBatchEnd(null);
+                if (ProjectConverter.TryUpgrade(projects))
                 {
-                    InitializeProject(project);
+                    projects = DTEUtil.GetProjects();
+                    List<IVsProject> sliceProjects = new List<IVsProject>();
+                    foreach (IVsProject project in projects)
+                    {
+                        InitializeProject(project);
+                    }
                 }
+            }
+            finally
+            {
+                NuGet.OnNugetBatchEnd(PackageInstalled);
             }
         }
 
@@ -446,22 +452,14 @@ namespace IceBuilder
                 {
                     if (project is IVsAggregatableProject)
                     {
-                        var aggregatableProject = project as IVsAggregatableProject;
-                        string projetcType;
-                        ErrorHandler.ThrowOnFailure(aggregatableProject.GetAggregateProjectTypeGuids(out projetcType));
-                        if (string.IsNullOrEmpty(projetcType))
+                        if(MSBuildUtils.AddProjectFlavorIfNotExists(
+                             MSBuildUtils.LoadedProject(ProjectUtil.GetProjectFullPath(project), false, true),
+                                MSBuildUtils.IceBuilderProjectFlavorGUID))
                         {
-                            aggregatableProject.SetAggregateProjectTypeGuids(
-                                string.Format("{0};{1}", MSBuildUtils.IceBuilderProjectFlavorGUID, projectType));
-                        }
-                        else if (!projetcType.Contains(MSBuildUtils.IceBuilderProjectFlavorGUID))
-                        {
-                            aggregatableProject.SetAggregateProjectTypeGuids(
-                                string.Format("{0};{1}", MSBuildUtils.IceBuilderProjectFlavorGUID, projectType));
+                            project.GetDTEProject().Save();
                         }
                     }
                 }
-                ProjectUtil.SetupGenerated(project, projectType);
                 FileTracker.Add(project, projectType);
             }
         }
@@ -616,7 +614,6 @@ namespace IceBuilder
             catch(Exception ex)
             {
                 UnexpectedExceptionWarning(ex);
-                throw;
             }
         }
 
@@ -634,7 +631,6 @@ namespace IceBuilder
             catch(Exception ex)
             {
                 UnexpectedExceptionWarning(ex);
-                throw;
             }
         }
 

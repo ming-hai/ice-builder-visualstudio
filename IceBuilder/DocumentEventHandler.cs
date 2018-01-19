@@ -74,7 +74,6 @@ namespace IceBuilder
             catch(Exception ex)
             {
                 Package.UnexpectedExceptionWarning(ex);
-                throw;
             }
             return 0;
         }
@@ -203,7 +202,6 @@ namespace IceBuilder
             catch(Exception ex)
             {
                 Package.UnexpectedExceptionWarning(ex);
-                throw;
             }
             return 0;
         }
@@ -243,7 +241,6 @@ namespace IceBuilder
             catch(Exception ex)
             {
                 Package.UnexpectedExceptionWarning(ex);
-                throw;
             }
             return 0;
         }
@@ -284,7 +281,6 @@ namespace IceBuilder
             catch(Exception ex)
             {
                 Package.UnexpectedExceptionWarning(ex);
-                throw;
             }
             return 0;
         }
@@ -330,7 +326,6 @@ namespace IceBuilder
             catch(Exception ex)
             {
                 Package.UnexpectedExceptionWarning(ex);
-                throw;
             }
             return 0;
         }
@@ -384,7 +379,6 @@ namespace IceBuilder
             catch(Exception ex)
             {
                 Package.UnexpectedExceptionWarning(ex);
-                throw;
             }
             return 0;
         }

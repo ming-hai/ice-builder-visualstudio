@@ -22,6 +22,7 @@ namespace IceBuilder
 
         private void OKButton_Clicked(object sender, EventArgs e)
         {
+            Hide();
             UpgradeDialogProgress proggressDialog = new UpgradeDialogProgress(Projects.Count);
             ProjectConverter.Upgrade(Projects, proggressDialog);
             proggressDialog.StartPosition = FormStartPosition.CenterParent;

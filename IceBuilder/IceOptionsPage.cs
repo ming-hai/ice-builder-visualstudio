@@ -55,7 +55,6 @@ namespace IceBuilder
             catch(Exception ex)
             {
                 Package.UnexpectedExceptionWarning(ex);
-                throw;
             }
         }
 
@@ -69,7 +68,6 @@ namespace IceBuilder
             catch(Exception ex)
             {
                 Package.UnexpectedExceptionWarning(ex);
-                throw;
             }
         }
     }
