@@ -32,9 +32,9 @@ namespace IceBuilder
             this.OKButton = new System.Windows.Forms.Button();
             this.description = new System.Windows.Forms.RichTextBox();
             this.SuspendLayout();
-            // 
+            //
             // Cancel
-            // 
+            //
             this.Cancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.Cancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.Cancel.Location = new System.Drawing.Point(537, 253);
@@ -44,9 +44,9 @@ namespace IceBuilder
             this.Cancel.Text = "Cancel";
             this.Cancel.UseVisualStyleBackColor = true;
             this.Cancel.Click += new System.EventHandler(this.CancelButton_Clicked);
-            // 
+            //
             // OKButton
-            // 
+            //
             this.OKButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.OKButton.Location = new System.Drawing.Point(456, 253);
             this.OKButton.Name = "OKButton";
@@ -55,11 +55,11 @@ namespace IceBuilder
             this.OKButton.Text = "OK";
             this.OKButton.UseVisualStyleBackColor = true;
             this.OKButton.Click += new System.EventHandler(this.OKButton_Clicked);
-            // 
+            //
             // description
-            // 
-            this.description.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
+            //
+            this.description.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.description.BackColor = System.Drawing.SystemColors.Control;
             this.description.BorderStyle = System.Windows.Forms.BorderStyle.None;
@@ -70,9 +70,9 @@ namespace IceBuilder
             this.description.TabIndex = 6;
             this.description.Text = "";
             this.description.LinkClicked += new System.Windows.Forms.LinkClickedEventHandler(this.description_LinkClicked);
-            // 
+            //
             // UpgradeDialog
-            // 
+            //
             this.AcceptButton = this.OKButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;

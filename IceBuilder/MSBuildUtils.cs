@@ -432,7 +432,6 @@ namespace IceBuilder
 
             var sliceItems = project.Items.Where(i => i.ItemType.Equals("SliceCompile")).Select(i =>  i.GetMetadataValue("FileName"));
 
-
             //
             // The default output directory for C++ generated sources changed to $(IntDir) in Ice Builder 5.x
             // projects that were using the default will be automatically upgrade, we remove the old generated

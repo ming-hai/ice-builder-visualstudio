@@ -34,18 +34,18 @@ namespace IceBuilder
             this.lblIceHome = new System.Windows.Forms.Label();
             this.autoBuild = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
-            // 
+            //
             // txtIceHome
-            // 
-            this.txtIceHome.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            //
+            this.txtIceHome.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtIceHome.Location = new System.Drawing.Point(3, 42);
             this.txtIceHome.Name = "txtIceHome";
             this.txtIceHome.Size = new System.Drawing.Size(283, 20);
             this.txtIceHome.TabIndex = 49;
-            // 
+            //
             // btnIceHome
-            // 
+            //
             this.btnIceHome.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnIceHome.Location = new System.Drawing.Point(289, 41);
             this.btnIceHome.Margin = new System.Windows.Forms.Padding(0);
@@ -55,27 +55,27 @@ namespace IceBuilder
             this.btnIceHome.Text = "...";
             this.btnIceHome.UseVisualStyleBackColor = true;
             this.btnIceHome.Click += new System.EventHandler(this.btnIceHome_Click);
-            // 
+            //
             // lblInfo
-            // 
-            this.lblInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            //
+            this.lblInfo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lblInfo.Location = new System.Drawing.Point(4, 75);
             this.lblInfo.Name = "lblInfo";
             this.lblInfo.Size = new System.Drawing.Size(315, 29);
             this.lblInfo.TabIndex = 51;
-            // 
+            //
             // lblIceHome
-            // 
+            //
             this.lblIceHome.AutoSize = true;
             this.lblIceHome.Location = new System.Drawing.Point(3, 26);
             this.lblIceHome.Name = "lblIceHome";
             this.lblIceHome.Size = new System.Drawing.Size(161, 13);
             this.lblIceHome.TabIndex = 48;
             this.lblIceHome.Text = "Ice home directory (Ice 3.6 only):";
-            // 
+            //
             // autoBuild
-            // 
+            //
             this.autoBuild.AutoSize = true;
             this.autoBuild.Location = new System.Drawing.Point(3, 3);
             this.autoBuild.Name = "autoBuild";
@@ -83,9 +83,9 @@ namespace IceBuilder
             this.autoBuild.TabIndex = 53;
             this.autoBuild.Text = "Compile Slice files immediately after save";
             this.autoBuild.UseVisualStyleBackColor = true;
-            // 
+            //
             // IceHomeEditor
-            // 
+            //
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.autoBuild);

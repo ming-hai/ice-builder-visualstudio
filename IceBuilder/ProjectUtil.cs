@@ -598,7 +598,7 @@ namespace IceBuilder
                         var hintPath = item.GetMetadata("HintPath").UnevaluatedValue;
                         if (hintPath.Contains("$(IceAssembliesDir)"))
                         {
-                            hintPath = hintPath.Replace("$(IceAssembliesDir)", 
+                            hintPath = hintPath.Replace("$(IceAssembliesDir)",
                                 FileUtil.RelativePath(Path.GetDirectoryName(reference.ContainingProject.FullName), assemblyDir));
                             //
                             // If the HintPath points to the NuGet zeroc.ice.net package we upgrade it to not

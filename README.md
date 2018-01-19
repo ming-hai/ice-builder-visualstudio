@@ -46,7 +46,7 @@ With Ice 3.6, you need to specify the Ice installation used by Ice Builder with 
 
 ## Automatic Build Configuration
 
-You can configure when Slice files are compiled on the `Tools` > `Options` > `Project and Solutions` > `Ice Builder` options page. 
+You can configure when Slice files are compiled on the `Tools` > `Options` > `Project and Solutions` > `Ice Builder` options page.
 
 If the automatic build option is selected, Slice files are compiled each time they are saved, otherwise they are compiled only during project builds.
 
@@ -78,8 +78,8 @@ These properties are the same for all configurations and platforms, and allow yo
 | Header Output Directory                 | SliceCompileHeaderOutputDir                  |
 | Include Directories                     | SliceCompileIncludeDirectories               |
 | Base Directory For Generated #include   | SliceCompileBaseDirectoryForGeneratedInclude |
-| Generated Header Extension              | SliceCompileHeaderExt                        | 
-| Generated Source Extension              | SliceCompileSourceExt                        | 
+| Generated Header Extension              | SliceCompileHeaderExt                        |
+| Generated Source Extension              | SliceCompileSourceExt                        |
 | Additional Options                      | SliceCompileAdditionalOptions                |
 
 See [Customizing the Slice to C++ Compilation](https://github.com/zeroc-ice/ice-builder-msbuild/blob/master/README.md#customizing-the-slice-to-c-compilation) for a detailed description of these properties.
@@ -90,10 +90,10 @@ See [Customizing the Slice to C++ Compilation](https://github.com/zeroc-ice/ice-
 
 Follow these steps:
 
-1. Add the Ice Builder NuGet package (`zeroc.icebuilder.msbuild`) to your C# project. 
+1. Add the Ice Builder NuGet package (`zeroc.icebuilder.msbuild`) to your C# project.
 
    Adding Ice Builder creates a `Slice Files` filter in your project.
-   
+
 2. Reload your project if it targets .NET Framework.
 
 3. Add one or more Slice (`.ice`) files to your project. While these Slice files can be anywhere, you may want to select a customary location such as the project's home directory or a sub-directory named `slice`.
@@ -112,7 +112,7 @@ These properties are the same for all configurations and platforms, and allow yo
 | --------------------------------------- | --------------------------------|
 | Output directory                        | SliceCompileOutputDir           |
 | Include directories                     | SliceCompileIncludeDirectories  |
-| Additional options                      | SliceCompileAdditionalOptions   | 
+| Additional options                      | SliceCompileAdditionalOptions   |
 
 See [Customizing the Slice to C# Compilation](https://github.com/zeroc-ice/ice-builder-msbuild/blob/master/README.md#customizing-the-slice-to-c-compilation-1) for a detailed description of these properties.
 

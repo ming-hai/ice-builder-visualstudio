@@ -561,7 +561,7 @@ namespace IceBuilder
             foreach (IVsProject project in projects)
             {
                 // Projects that are not being track has not been previous initialized
-                // initialize will do nothing in zeroc.icebuilder.msbuild package is 
+                // initialize will do nothing in zeroc.icebuilder.msbuild package is
                 // not installed
                 if(!FileTracker.Contains(ProjectUtil.GetProjectFullPath(project)))
                 {
