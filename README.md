@@ -40,7 +40,7 @@ With Ice 3.7 or greater, you add an Ice NuGet package to your project and Ice Bu
 
 With Ice 3.6, you need to specify the Ice installation used by Ice Builder with the `Tools` > `Options` > `Project and Solutions` > `Ice Builder` options page.
 
-![Ice home screenshot](https://github.com/zeroc-ice/ice-builder-visualstudio/raw/master/Screenshots/vs2015-options.png)
+![Ice home screenshot](/Screenshots/vs2015-options.png)
 
 :warning: This Ice Home setting is ignored when a project uses an Ice NuGet package. Installing an Ice NuGet package into a project automatically configures the project to use the Ice SDK provided by that NuGet package.
 
@@ -68,7 +68,7 @@ Follow these steps:
 
 Ice Builder adds an `Ice Builder` property page to the `Common Properties` of your C++ project:
 
-![Missing cpp property page](https://github.com/zeroc-ice/ice-builder-visualstudio/raw/master/Screenshots/cpp-property-page.png)
+![Missing cpp property page](/Screenshots/cpp-property-page.png)
 
 These properties are the same for all configurations and platforms, and allow you to specify the options passed to `slice2cpp` when compiling the project's Slice files.
 
@@ -104,7 +104,7 @@ Follow these steps:
 
 Ice Builder adds an `Ice Builder` tab to the properties of your C# project:
 
-![Missing csharp property page](https://github.com/zeroc-ice/ice-builder-visualstudio/raw/master/Screenshots/csharp-property-page.png)
+![Missing csharp property page](/Screenshots/csharp-property-page.png)
 
 These properties are the same for all configurations and platforms, and allow you to specify the options passed to `slice2cs` when compiling the project's Slice files.
 
