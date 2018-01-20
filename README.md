@@ -113,6 +113,16 @@ These properties are the same for all configurations and platforms, and allow yo
 
 See [Customizing the Slice to C# Compilation](https://github.com/zeroc-ice/ice-builder-msbuild/blob/master/README.md#customizing-the-slice-to-c-compilation-1) for a detailed description of these properties.
 
+## Upgrading Project Files created with a previous Ice Builder
+
+When you open a solution with projects that reference an old Ice Builder, Ice Builder offers you to convert these projects to the latest format. This conversion is required to use the latest Ice Builder; it can take a few minutes and is not reversible.
+
+## Migration from the Ice add-in
+
+Ice Builder no longer supports direct migration from the Ice add-in for Visual Studio to Ice Builder. The migration from the Ice add-in to Ice Builder is now a two-step process:
+ * Install [Ice Builder 4.3.9](https://github.com/zeroc-ice/ice-builder-visualstudio/releases/tag/v4.3.9) to migrate your projects to Ice Builder
+ * Install the latest Ice Builder to convert your projects (that are now using Ice Builder 4.3.9) to the latest Ice Builder format 
+
 ## Building Ice Builder from Source
 
 ### Build Requirements
