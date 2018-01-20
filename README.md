@@ -10,8 +10,7 @@ Ice Builder for Visual Studio is compatible with Visual Studio 2012, 2013, 2015 
 
 * [Installation](#installation)
 * [Overview](#overview)
-* [Ice Home Configuration](#ice-home-configuration)
-* [Automatic Build Configuration](#automatic-build-configuration)
+* [Ice Builder Options](#ice-builder-options)
 * [C++ Usage](#c-usage)
   * [Adding Slice Files to a C++ Project](#adding-slice-files-to-a-c-project)
   * [Ice Builder Configuration for a C++ Project](#ice-builder-configuration-for-a-c-project)
@@ -34,21 +33,19 @@ Ice Builder for MSBuild provides support for compiling Slice source files (`.ice
 
 You tell Ice Builder for MSBuild which Slice files to compile by adding these files to your project, as described in the sections below. Ice Builder checks whether Slice files need to be compiled or recompiled each time Visual Studio loads a project, and each time you build a project. And if you remove or rename a Slice file with the Visual Studio IDE, Ice Builder for Visual Studio automatically removes the corresponding generated files.
 
-## Ice Home Configuration
+## Ice Builder Options
 
-With Ice 3.7 or greater, you add an Ice NuGet package to your project and Ice Builder then uses this Ice installation. You don't need to specify further the Ice installation used by Ice Builder.
-
-With Ice 3.6, you need to specify the Ice installation used by Ice Builder with the `Tools` > `Options` > `Project and Solutions` > `Ice Builder` options page.
+You can configure the Ice Builder global options on the `Tools` > `Options` > `Project and Solutions` > `Ice Builder` page.
 
 ![Ice home screenshot](/Screenshots/options.png)
 
-:warning: This Ice Home setting is ignored when a project uses an Ice NuGet package. Installing an Ice NuGet package into a project automatically configures the project to use the Ice SDK provided by that NuGet package.
+### Compile on Save Configuration
 
-## Automatic Build Configuration
+If the `Compile Slice files immediately after save` box is checked, Ice Builder compiles a Slice file when you save it, otherwise it compiles Slice files only during project builds.
 
-You can configure when Slice files are compiled on the `Tools` > `Options` > `Project and Solutions` > `Ice Builder` options page.
+### Ice Home Configuration (Ice 3.6)
 
-If the automatic build option is selected, Slice files are compiled each time they are saved, otherwise they are compiled only during project builds.
+With Ice 3.6, you need to specify the Ice installation used by Ice Builder. This Ice Home setting is ignored by projects that install Ice as a NuGet package.
 
 ## C++ Usage
 
