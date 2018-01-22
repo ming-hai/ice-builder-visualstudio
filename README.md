@@ -119,8 +119,8 @@ See [Customizing the Slice to C# Compilation](https://github.com/zeroc-ice/ice-b
 ## Migration from the Ice Add-in
 
 Ice Builder no longer supports direct migration from the old Ice add-in for Visual Studio to Ice Builder. The migration from the Ice add-in to Ice Builder is now a two-step process:
- * Install [Ice Builder 4.3.9](https://github.com/zeroc-ice/ice-builder-visualstudio/releases/tag/v4.3.9) to migrate your projects to the Ice Builder 4.3.9 format
- * Install the latest Ice Builder to convert your projects (that are now using Ice Builder 4.3.9) to the latest Ice Builder format 
+ * Install [Ice Builder 4.3.10](https://github.com/zeroc-ice/ice-builder-visualstudio/releases/tag/v4.3.10) to migrate your projects to the Ice Builder 4.3.10 format
+ * Install the latest Ice Builder to convert your projects (that are now using Ice Builder 4.3.10) to the latest Ice Builder format 
 
 ## Building Ice Builder from Source
 
